@@ -1,0 +1,111 @@
+/* Google Fonts must be imported before any other rules per CSS spec. */
+@import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+.font-telugu-headline {
+  font-family: "Ramabhadra", "Noto Sans Telugu", Gautami, Vani, sans-serif;
+}
+
+.font-telugu-summary {
+  font-family: Vani, "Noto Sans Telugu", Gautami, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Dark theme — toggled at runtime by adding the .tv-dark class on the root
+   wrapper (see page.tsx). These rules are intentionally unlayered so they win
+   over Tailwind's layered utilities. Layout is untouched; only colors change.
+   In light mode (.tv-dark absent) these rules have zero effect.
+--------------------------------------------------------------------------- */
+body:has(.tv-dark) {
+  background: #0b1120;
+}
+
+.tv-dark {
+  min-height: 100vh;
+  background: #0b1120;
+  color-scheme: dark;
+}
+
+.tv-dark .bg-\[\#f8fafc\],
+.tv-dark .bg-\[\#f7f7f7\] {
+  background-color: #0b1120;
+}
+
+.tv-dark .bg-white,
+.tv-dark .bg-white\/90 {
+  background-color: #111827;
+}
+
+.tv-dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+
+.tv-dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+
+.tv-dark .bg-slate-200 {
+  background-color: #334155;
+}
+
+.tv-dark .bg-\[\#eeeeee\] {
+  background-color: #1e293b;
+}
+
+.tv-dark .bg-\[\#071225\] {
+  background-color: #334155;
+}
+
+.tv-dark .bg-gradient-to-br {
+  background-image: none;
+  background-color: #111827;
+}
+
+.tv-dark .text-\[\#071225\],
+.tv-dark .text-\[\#070b13\] {
+  color: #e5e7eb;
+}
+
+.tv-dark .text-slate-700,
+.tv-dark .text-slate-600 {
+  color: #cbd5e1;
+}
+
+.tv-dark .text-slate-500,
+.tv-dark .text-slate-400 {
+  color: #94a3b8;
+}
+
+.tv-dark .border-slate-200,
+.tv-dark .border-slate-200\/90,
+.tv-dark .border-slate-100 {
+  border-color: #1f2937;
+}
+
+.tv-dark .divide-slate-100 > * {
+  border-color: #1f2937;
+}
+
+/* ─── Modal / overlay animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out;
+}
+
+/* ─── Smooth section transitions ─── */
+.section-enter {
+  animation: slideUp 0.3s ease-out;
+}

@@ -1,0 +1,1194 @@
+[
+  {
+    "name": "UN News",
+    "category": "breaking",
+    "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/16-01-2026-WFP-Central-African-Republic-01.jpg/image560x340cropped.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/03-03-2026-WFP-Afghanistan-05.jpg/image560x340cropped.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/09-04-2026_UNP_SC_UNMIK.jpg/image560x340cropped.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/06/12-06-2026_Yemen-UNFPA.JPG/image560x340cropped.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/01-06-2026-UNIFIL-Lebanon.jpg/image560x340cropped.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Libraries/Production%20Library/19-09-22_UN769439_Dujarric_file_photo.jpg/image560x340cropped.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "DW News English",
+    "category": "breaking",
+    "url": "https://rss.dw.com/rdf/rss-en-all",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77555069_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77044290_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77554014_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77552652_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/75790767_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77551570_6.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Al Jazeera English",
+    "category": "breaking",
+    "url": "https://www.aljazeera.com/xml/rss/all.xml",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/afp_6a2fb7079625-1781511943.jpg?resize=1920%2C1440"
+      ],
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/08438500-5f6e-11f1-bb1e-872b6e9ba8be.jpg-1781516659.webp?resize=1200%2C675"
+      ],
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/image-1781515958.jpg?resize=1920%2C1080&quality=80"
+      ],
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/2026-06-14T231611Z_1746635216_UP1EM6E1OU5DV_RTRMADP_3_SOCCER-WORLDCUP-NLD-JPN-1781490912.jpg?resize=1920%2C1440"
+      ],
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/AFP__20260601__B4M49N7__v1__MidRes__IranUsIsraelWarDailyLife-1781507907.jpg?resize=1200%2C630"
+      ],
+      [
+        "CLEAN",
+        "https://www.aljazeera.com/wp-content/uploads/2026/06/getty_6a2faf0c21-1781509900.jpg?resize=1920%2C1440"
+      ]
+    ]
+  },
+  {
+    "name": "Visala Andhra",
+    "category": "breaking",
+    "url": "https://visalaandhra.com/feed",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-224.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-223.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-222.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-221.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-220.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://visalaandhra.com/wp-content/uploads/2026/06/web-photo-copy-2-219.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Euronews - World",
+    "category": "breaking",
+    "url": "https://www.euronews.com/rss?level=theme&name=news",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/85/47/1200x675_cmsv2_de9a107f-0560-53c1-8f0c-afdc3d683d39-9798547.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/84/05/1200x675_cmsv2_a5e92a79-df41-5880-a2a6-22c194ef3be2-9798405.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/83/82/1200x675_cmsv2_185e6721-c108-5175-a046-ea444cd027f5-9798382.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/83/35/1200x675_cmsv2_ae4c8022-b7be-555f-88e2-8b805162091e-9798335.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/82/76/1200x675_cmsv2_154d9e0c-3e27-59b3-9dc2-f72807ac3314-9798276.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://images.euronews.com/articles/stories/09/79/82/98/1200x675_cmsv2_6cd2e897-3ae1-585b-961b-1ac42efe36e8-9798298.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "The Hindu - National",
+    "category": "breaking",
+    "url": "https://www.thehindu.com/news/national/?service=rss",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/incoming/r885/article71103766.ece/alternates/LANDSCAPE_1200/PTI05_22_2024_000183B.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/incoming/jytw4y/article71080147.ece/alternates/LANDSCAPE_1200/AFP_94FG9XJ.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/incoming/vhmr4b/article71103925.ece/alternates/LANDSCAPE_1200/20260609185L.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/news/national/x3oryi/article71104308.ece/alternates/LANDSCAPE_1200/WhatsApp%20Image%202026-06-15%20at%2015.10.59.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/news/national/andhra-pradesh/k9jh5i/article71104301.ece/alternates/LANDSCAPE_1200/Bapatla.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://th-i.thgim.com/public/incoming/4t00r6/article67250691.ece/alternates/LANDSCAPE_1200/covishield%C2%A0vaccine%2004.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Telangana Today",
+    "category": "breaking",
+    "url": "https://telanganatoday.com/feed",
+    "blocked_by_policy": true,
+    "status": "DEAD",
+    "total": 0,
+    "clean": 0,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": []
+  },
+  {
+    "name": "DW Sports",
+    "category": "sports",
+    "url": "https://rss.dw.com/rdf/rss-en-sports",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77549352_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77549318_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77303266_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77540469_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/77532435_6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://static.dw.com/image/74799983_6.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Sportstar - The Hindu",
+    "category": "sports",
+    "url": "https://sportstar.thehindu.com/feeder/default.rss",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/hxmcgb/article71104272.ece/alternates/LANDSCAPE_1200/WhatsApp%20Image%202026-06-15%20at%2015.02.45.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/c12vu4/article71104327.ece/alternates/LANDSCAPE_1200/2026-06-09T010156Z_416699022_UP1EM6902V6D0_RTRMADP_3_SOCCER-FRIENDLY-PER-ESP.JPG"
+      ],
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/8szvmd/article71104355.ece/alternates/LANDSCAPE_1200/TH29-BOXING-TEAGPKFLDF0E.3.jpg.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/o99dql/article71104257.ece/alternates/LANDSCAPE_1200/PTI01_02_2026_000150A.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/hsigx7/article71103917.ece/alternates/LANDSCAPE_1200/VIS_6276.JPG"
+      ],
+      [
+        "CLEAN",
+        "https://ss-i.thgim.com/public/incoming/kiau6n/article71103916.ece/alternates/LANDSCAPE_1200/England_India_Women_Cricket_29711.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "The Bridge",
+    "category": "sports",
+    "url": "https://thebridge.in/feed/",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2025/09/18/63502-neeraj-chopra.webp"
+      ],
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2024/11/08/58623-updated-the-bridge-2024-11-08t153837454.webp"
+      ],
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2025/10/12/63781-joshna-chinappa.webp"
+      ],
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2026/06/15/65568-deepti-sharma.webp"
+      ],
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2022/03/30/25485-india-is-game-on-for-online-games-even-as-legal-ambiguities-persist.webp"
+      ],
+      [
+        "CLEAN",
+        "https://thebridge.in/h-upload/2025/06/18/62003-wp924852025061811zon.webp"
+      ]
+    ]
+  },
+  {
+    "name": "ESPNcricinfo - India Team",
+    "category": "sports",
+    "url": "https://www.espncricinfo.com/rss/content/story/feeds/6.xml",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/418200/418234.jpg"
+      ],
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/418200/418254.jpg"
+      ],
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/418200/418215.jpg"
+      ],
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/418200/418215.jpg"
+      ],
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/411800/411845.jpg"
+      ],
+      [
+        "CLEAN",
+        "http://p.imgci.com/db/PICTURES/CMS/418100/418131.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "BBC Sport - Cricket",
+    "category": "sports",
+    "url": "https://feeds.bbci.co.uk/sport/cricket/rss.xml",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/f7e7/live/a70cdcc0-6826-11f1-bbd5-b558f35f2fef.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/fb91/live/1b3c0c60-6818-11f1-b1db-af71d47507d6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/f4fc/live/24167c50-673f-11f1-b1db-af71d47507d6.png"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d61b/live/c0937ce0-6811-11f1-a177-65e13786d3a5.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/8365/live/97237660-681d-11f1-8546-8f19e4fe30f4.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/6db6/live/651d5140-6818-11f1-b1db-af71d47507d6.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Yahoo Finance News",
+    "category": "business",
+    "url": "https://finance.yahoo.com/news/rssindex",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://media.zenfs.com/en/thestreet_881/e27518f86042a268461df9f5de60a62d"
+      ],
+      [
+        "CLEAN",
+        "https://s.yimg.com/os/creatr-uploaded-images/2025-06/006c3000-3feb-11f0-b84f-0d1aa528bfe7"
+      ],
+      [
+        "CLEAN",
+        "https://s.yimg.com/uu/api/res/1.2/ywl_Zm74xDJzE97D99.igA--~B/aD0xMDgwO3c9MTkyMDthcHBpZD15dGFjaHlvbg--/https://d29szjachogqwa.cloudfront.net/images/user-uploaded/vo-spacex-nasdaq-061226mp400-00-21-02still002_6124.png"
+      ],
+      [
+        "CLEAN",
+        "https://s.yimg.com/os/creatr-uploaded-images/2024-07/0a4cca40-4b7b-11ef-abf9-2f9f6d2c2f16"
+      ],
+      [
+        "CLEAN",
+        "https://s.yimg.com/os/creatr-uploaded-images/2024-04/480de4d0-03ec-11ef-bfff-fe31b82eccd6"
+      ],
+      [
+        "CLEAN",
+        "https://s.yimg.com/os/creatr-uploaded-images/2025-04/16611790-1cdc-11f0-b7df-12959cc17bf8"
+      ]
+    ]
+  },
+  {
+    "name": "BBC News - Business",
+    "category": "business",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/cfa7/live/31930ca0-68a1-11f1-b9ac-e71b9be292bd.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/eb2d/live/8be72110-6887-11f1-8c6b-f595710535a5.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/26eb/live/b45a5990-6892-11f1-b1db-af71d47507d6.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5333/live/5995e9a0-6597-11f1-99b8-5530f29d65f4.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1bc2/live/7082e5b0-641a-11f1-b8c4-d17e7970dcab.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/10d8/live/38db3400-689d-11f1-8546-8f19e4fe30f4.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "The Hindu BusinessLine",
+    "category": "business",
+    "url": "https://www.thehindubusinessline.com/?service=rss",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/kgux6/article71064743.ece/alternates/LANDSCAPE_1200/PO15_Tax_cut.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/gbizrp/article71104248.ece/alternates/LANDSCAPE_1200/IMG_bl15Jan_pg1_promo_2_1_UCFEK5R3.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/hag7un/article71103825.ece/alternates/LANDSCAPE_1200/2026-02-05T105345Z_1730916011_RC2L7HALI69E_RTRMADP_3_BHARTI-AIRTEL-RESULTS.JPG"
+      ],
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/y9lh3o/article71093394.ece/alternates/LANDSCAPE_1200/PO15_Poly_bull.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/yr1wr4/article71103866.ece/alternates/LANDSCAPE_1200/PTI06_14_2026_000286B.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://bl-i.thgim.com/public/incoming/s7thli/article71104221.ece/alternates/LANDSCAPE_1200/80759_3_3_2025_17_0_16_3_PENSHURST01.JPG"
+      ]
+    ]
+  },
+  {
+    "name": "Telangana Today - Business",
+    "category": "business",
+    "url": "https://telanganatoday.com/category/business/feed",
+    "blocked_by_policy": true,
+    "status": "DEAD",
+    "total": 0,
+    "clean": 0,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": []
+  },
+  {
+    "name": "Variety - Film",
+    "category": "movies",
+    "url": "https://variety.com/v/film/feed",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2026/06/Shanghai-Future-of-Cinema-panel.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2026/06/unnamed-54.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2026/06/Only-The-Moon-Knows.png"
+      ],
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2026/06/Boomah.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2026/05/Colony-e1779816068973.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://variety.com/wp-content/uploads/2025/09/The-Furious.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "The Hollywood Reporter",
+    "category": "movies",
+    "url": "https://www.hollywoodreporter.com/feed",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2024/07/FotoJet-2024-07-15T124539.290.jpg?w=1440&h=810&crop=1"
+      ],
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2026/06/GettyImages-2255785667.jpg?crop=0px%2C205px%2C5000px%2C2798px&resize=1440%2C810"
+      ],
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2026/06/GettyImages-2281607455-1.jpg?w=1296&h=730&crop=1"
+      ],
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2026/06/Screenshot-2026-06-14-at-9.34.46\u202fPM.png?crop=62px%2C18px%2C723px%2C404px&resize=1440%2C810"
+      ],
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2026/06/Anne-Schedeen.jpg?w=1296&h=730&crop=1"
+      ],
+      [
+        "CLEAN",
+        "https://www.hollywoodreporter.com/wp-content/uploads/2015/04/the_kennedys_reelz_still.jpg?w=1440&h=810&crop=1"
+      ]
+    ]
+  },
+  {
+    "name": "Deadline Hollywood",
+    "category": "movies",
+    "url": "https://deadline.com/feed/rss",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/06/Michele-Norris-and-President-Obama-for-Hope-Comes-Home-Credit-MS-NOW.png"
+      ],
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/05/Sheffield-DocFest-2026-graphic.png"
+      ],
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/06/GettyImages-2192872000.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/06/ReelShort-and-SHOWBOX-Co-Production-Partnership-image-260620.png"
+      ],
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/06/Screenshot-2026-06-14-at-9.39.37\u202fPM.png"
+      ],
+      [
+        "CLEAN",
+        "https://deadline.com/wp-content/uploads/2026/06/GettyImages-2281616904.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Filmyfocus - Tollywood",
+    "category": "movies",
+    "url": "https://filmyfocus.com/feed",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/Prime-Video-Unveils-Intense-Trailer-Of-Isakapatnam.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/Buchi-Babu-Faces-Tough-Questions-With-Calm-Answers.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/How-Sing-Geetham-Became-A-Reality-After-Decades.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/One-Job-Endless-Confusion-Super-Subbu-On-Netflix-From....jpg"
+      ],
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/Ram-Takes-Budget-Friendly-Route-For-His-Next-Film.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://axsmwioqmf3c.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/static.filmyfocus.com/wp-content/uploads/2026/06/From-Native-Village-To-Telangana-Vijays-Big-Promise-For-Students.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "Telugu Bulletin - Movies",
+    "category": "movies",
+    "url": "https://telugubulletin.com/movies/feed",
+    "blocked_by_policy": true,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/Anirudh-Begins-a-New-Journey-with-\u2018Aravindh.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/IMG_20260615_104623.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/Peddi-Sports-genere-e1781435387294.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/gv-prakash-video.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-14-at-5.40.47-PM.jpeg"
+      ],
+      [
+        "CLEAN",
+        "https://www.telugubulletin.com/wp-content/uploads/2026/06/peddi-rules-box-office.jpeg"
+      ]
+    ]
+  },
+  {
+    "name": "Telangana Today - Crime",
+    "category": "crime",
+    "url": "https://telanganatoday.com/category/crime/feed",
+    "blocked_by_policy": true,
+    "status": "DEAD",
+    "total": 0,
+    "clean": 0,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": []
+  },
+  {
+    "name": "Telangana Today - Hyderabad",
+    "category": "crime",
+    "url": "https://telanganatoday.com/category/hyderabad/feed",
+    "blocked_by_policy": true,
+    "status": "DEAD",
+    "total": 0,
+    "clean": 0,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": []
+  },
+  {
+    "name": "The Guardian - World",
+    "category": "breaking",
+    "url": "https://www.theguardian.com/world/rss",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/6dac1cfee0895baf98d046cb4ae8c69266ffb82e/342_0_1977_1582/master/1977.jpg?width=140&quality=85&auto=format&fit=max&s=ced5a2717105c4621a0c661ef7f67441"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/eb6a726a61edfe12624ade8f1deb2877ce05421a/561_0_3096_2477/master/3096.jpg?width=140&quality=85&auto=format&fit=max&s=ab001e19daa7789cf9557534b7b67768"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/e568abb057651e11af43846809a978df3c5a45ff/0_0_1500_1200/master/1500.jpg?width=140&quality=85&auto=format&fit=max&s=eacbb29eaeac394d90486ad92b4bf270"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/33e60df009fdec547631627e7a17a773492cadf7/751_0_5000_4000/master/5000.jpg?width=140&quality=85&auto=format&fit=max&s=fd82f98516ba54c540eb5d6b5813e05b"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/f226f4da11f7c00a4678d55ae9dbe2c3d5c2ce8f/0_0_4169_3335/master/4169.jpg?width=140&quality=85&auto=format&fit=max&s=d1a12e50e367df3d5d99ee0d030639ee"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/bdfc928267c566e4b22e1a340e1e52f69375e52a/729_0_5653_4523/master/5653.jpg?width=140&quality=85&auto=format&fit=max&s=5f83066c86260047e3c0de3bf0121c8c"
+      ]
+    ]
+  },
+  {
+    "name": "The Guardian - India",
+    "category": "breaking",
+    "url": "https://www.theguardian.com/world/india/rss",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/aefa455070e293def7361979441ac9b1870d8721/485_0_2835_2268/master/2835.jpg?width=140&quality=85&auto=format&fit=max&s=295884c79a458c96288cf27d2ab9aefa"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/20191cf51a3e281670cbe5416d42459d542f6f79/39_14_999_799/master/999.jpg?width=140&quality=85&auto=format&fit=max&s=ec9a1bc0d865def2c120a43efed50e50"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/b1ba8604c803cad2607bd0a65fb81de813aacdf6/0_0_1500_1200/master/1500.jpg?width=140&quality=85&auto=format&fit=max&s=4de36fa9664b2ee2b5e625b7397a6479"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/23e78815b64af0f479a05592c4e59e9f2991437c/1661_0_3401_2724/master/3401.jpg?width=140&quality=85&auto=format&fit=max&s=9f4a7d542a66e24c4e264b2bda7e3ad9"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/ac92e5924847284d22c0fadd9251e019fe9708a6/712_0_5000_4000/master/5000.jpg?width=140&quality=85&auto=format&fit=max&s=72d3921aea97c9fc23c5eea6bf0b30e4"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/2b5b5f4767bb0182b1ed9aeaf9bde68e9907ee70/275_0_7680_6144/master/7680.jpg?width=140&quality=85&auto=format&fit=max&s=69199d256fef85e4e0e7dce3e071ba9d"
+      ]
+    ]
+  },
+  {
+    "name": "The Guardian - Business",
+    "category": "business",
+    "url": "https://www.theguardian.com/business/rss",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/5c00faa8d89a9491b653f1c5cbc2a0ac3b56e8ec/933_0_5254_4203/master/5254.jpg?width=140&quality=85&auto=format&fit=max&s=005219158c5e26ab0eb36a42e289ef7b"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/005a9c23072ba5cd7e9721c948915528755e5588/93_0_2814_2252/master/2814.jpg?width=140&quality=85&auto=format&fit=max&s=6e99e833867413af6f099d1e2680f9b2"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/21442718d370dfc1c92efe6f09144d93fb01fd5b/232_0_2915_2333/master/2915.jpg?width=140&quality=85&auto=format&fit=max&s=c686b812f8aacd05b20e81beb17c169b"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/26bb4a793a023352955c7edf8ada51b4fba44260/1078_0_6078_4862/master/6078.jpg?width=140&quality=85&auto=format&fit=max&s=29bc83ab54e642a8153b0ad8da55695a"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/efc9ed569b72b2e347443dd8a0ca076c3d4eed91/239_0_3022_2418/master/3022.jpg?width=140&quality=85&auto=format&fit=max&s=d76fd53a8a8c1f0fbd4e569337345469"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/b1558c17f6abf850f6562632712c2675198aa8a1/145_0_1665_1332/master/1665.jpg?width=140&quality=85&auto=format&fit=max&s=8438275e01cc2555017cb4e53dad6403"
+      ]
+    ]
+  },
+  {
+    "name": "The Guardian - Sport",
+    "category": "sports",
+    "url": "https://www.theguardian.com/sport/rss",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/0b83d1ae434663eff7b67d175d101a6c914931c7/108_0_3008_2407/master/3008.jpg?width=140&quality=85&auto=format&fit=max&s=709e104bb9104a35cf1b3823714382c7"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/943ab92b070686e2d9019c64cb5e44d36853073b/1172_5_4117_3295/master/4117.jpg?width=140&quality=85&auto=format&fit=max&s=7b2df0e4ac98467c2fad5a4eb2fd7658"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/34599057bae36e61afcfce81524acdff50d17881/236_0_6830_5464/master/6830.jpg?width=140&quality=85&auto=format&fit=max&s=1b2482df985372f2de0a572a12ce04d2"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/bd39d18f6c5cd67a55ff44c50f9e84d744c9b0b7/0_0_4614_3693/master/4614.jpg?width=140&quality=85&auto=format&fit=max&s=115c496d704bce4ec9027ae2f1df3aa0"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/f8bce3a786d82f4819c617fd9d5330afe65aa0ba/309_46_2626_2102/master/2626.jpg?width=140&quality=85&auto=format&fit=max&s=07903410eb70a3a66e7c1a6483e98525"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/11c106490ec8aebb4dfe4dcbb9273a5b949777ec/213_0_1871_1497/master/1871.jpg?width=140&quality=85&auto=format&fit=max&s=5aea95e20b1b42da7b5f98fe9f7b77e6"
+      ]
+    ]
+  },
+  {
+    "name": "The Guardian - Film",
+    "category": "movies",
+    "url": "https://www.theguardian.com/film/rss",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/45487d5d3626b8bea9ec1703e1a1ff4855a1a6c8/171_0_1705_1364/master/1705.jpg?width=140&quality=85&auto=format&fit=max&s=3272c3bd7a0c51b055866b78bf5c33f3"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/df3616c100db17b0c5191d9262ad95585380e85c/395_20_1291_1033/master/1291.jpg?width=140&quality=85&auto=format&fit=max&s=a7dc36e8c2857d8446e72d274d5293f8"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/f0b2e65bbd1f453c8a430b2f3112ef2571fd59ad/143_0_2129_1704/master/2129.jpg?width=140&quality=85&auto=format&fit=max&s=7bb43fecb429e026415bee52467b9f62"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/12b94c83cdd9c62276bed7219b3e743bf6cd076a/0_676_5669_4536/master/5669.jpg?width=140&quality=85&auto=format&fit=max&s=f3f27c7204d875669f1d367d7040d1f7"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/18e498b4e64cef35cc78474866793e594ec741dd/657_0_6634_5307/master/6634.jpg?width=140&quality=85&auto=format&fit=max&s=e2082303e04a075791e7dd0242f76848"
+      ],
+      [
+        "CLEAN",
+        "https://i.guim.co.uk/img/media/9b1d61f0cf37278b39af4188b42696fc350f7637/312_0_3120_2496/master/3120.jpg?width=140&quality=85&auto=format&fit=max&s=599c02709928d205e245192e9a6572ce"
+      ]
+    ]
+  },
+  {
+    "name": "VOA - Top Stories",
+    "category": "breaking",
+    "url": "https://www.voanews.com/api/zqboml-vomx-tpeivmy",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/582f271d-36b2-487b-3639-08dd5c897904_cx0_cy5_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/68831369-c7c2-4245-0a13-08dd5c8b1668_cx0_cy5_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/cd57cf1e-8a29-48e8-0a12-08dd5c8b1668_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/cc9800be-5999-48e7-3633-08dd5c897904_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/44e47e3d-aead-4a41-0f2a-08dd5c8d307c_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/d28f8d33-a094-4e03-362e-08dd5c897904_w800_h450.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "VOA - South & Central Asia",
+    "category": "breaking",
+    "url": "https://www.voanews.com/api/z_-mqyl-vomx-tpevyvqv",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/66224c88-0867-4043-3629-08dd5c897904_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/eb967d1c-acd9-47b4-0f10-08dd5c8d307c_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/37d7e60b-acc1-4f34-09ba-08dd5c8b1668_cx0_cy0_cw98_w800_h450.png"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/df6927f2-4a85-4a1f-3304-08dd5c897904_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/eb967d1c-acd9-47b4-0f10-08dd5c8d307c_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/3e4a3bc4-9904-45f8-33fb-08dd5c897904_w800_h450.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "VOA - Economy",
+    "category": "business",
+    "url": "https://www.voanews.com/api/zyboql-vomx-tpetvmi",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/e39981af-f818-4365-1038-08dd5c8d307c_tv_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/c11d8abf-644a-4e8e-ab62-7302ff39f457_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/a1531c9d-c3db-422b-0e43-08dd5c8d307c_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/f6f97dcd-1ab7-4cfa-33af-08dd5c897904_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/43025c33-df66-467a-073f-08dd5c8b1668_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/30c46067-e2d2-4625-3068-08dd5c897904_w800_h450.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "VOA - Technology",
+    "category": "breaking",
+    "url": "https://www.voanews.com/api/zyritl-vomx-tpettmq",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/19bf5df9-7548-4b03-10c7-08dd5c8d307c_cx0_cy3_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/3dfd491e-e684-4aad-be7b-3cd3b8108672_cx0_cy10_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/8a9bef90-3122-4d79-0e38-08dd5c8d307c_cx0_cy3_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/5ee089cb-5149-4b45-0757-08dd5c8b1668_cx0_cy7_cw0_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/e369af59-756a-421f-0dd5-08dd5c8d307c_tv_w800_h450.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://gdb.voanews.com/b0115a1d-77c0-4c68-89c7-3de8d05a406d_w800_h450.jpg"
+      ]
+    ]
+  },
+  {
+    "name": "NASA - Breaking News",
+    "category": "breaking",
+    "url": "https://www.nasa.gov/news-release/feed/",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https://www.nasa.gov/wp-content/uploads/2026/06/34-resupply-return-coverage-june-12.jpg?w=1920"
+      ],
+      [
+        "CLEAN",
+        "https://www.nasa.gov/wp-content/uploads/2026/06/55158722798-9bb0f41f19-o.jpg?w=1939"
+      ],
+      [
+        "CLEAN",
+        "https://assets.science.nasa.gov/dynamicimage/assets/science/missions/hubble/galaxies/clusters/MACS0329-0211_sky_Sreg_flat_FINAL.tif?w=2048"
+      ],
+      [
+        "CLEAN",
+        "https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/world-cup-fever-in-guadalajara/guadalajara_tm5_19860413.jpg"
+      ],
+      [
+        "CLEAN",
+        "https://www.nasa.gov/wp-content/uploads/2022/12/calibration-gas-system-cgs.png?w=1536"
+      ],
+      [
+        "CLEAN",
+        "https://assets.science.nasa.gov/dynamicimage/assets/science/missions/chandra/2026/sgrc_Chandra_062026.jpg?w=6000&h=5284&fit=clip&crop=faces%2Cfocalpoint"
+      ]
+    ]
+  },
+  {
+    "name": "PIB - Press Releases",
+    "category": "breaking",
+    "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+    "blocked_by_policy": false,
+    "status": "CLEAN",
+    "total": 6,
+    "clean": 6,
+    "logo_url": 0,
+    "publisher_stamp": 0,
+    "empty": 0,
+    "sample_images": [
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ],
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ],
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ],
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ],
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ],
+      [
+        "CLEAN",
+        "https:/pib.gov.in/images/indian-emblem.png"
+      ]
+    ]
+  }
+]

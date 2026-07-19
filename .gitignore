@@ -1,0 +1,65 @@
+# ─── Env / secrets ────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Python venvs / caches ─────────────────────────────────────
+backend/source/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+venvsource/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# ─── Frontend ─────────────────────────────────────────────────
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+frontend/build/
+frontend/.turbo/
+
+# ─── OS junk ───────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── Editors ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+
+# ─── Logs / runtime ───────────────────────────────────────────
+*.log
+*.log.*
+backend/*.pid
+backend/.scraper.lock
+
+# ─── Local DB dumps ───────────────────────────────────────────
+*.sql
+*.sql.gz
+*.dump
+
+# ─── Coverage / test artefacts ────────────────────────────────
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+
+# ─── Build / dist ─────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
