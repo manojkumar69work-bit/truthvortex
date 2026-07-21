@@ -166,9 +166,11 @@ _SELECT = (
 @app.on_event("startup")
 def _startup() -> None:
     # Surface obvious misconfiguration early (without logging secret values).
-    provider = os.getenv("AI_PROVIDER", "groq").strip().lower()
+    provider = os.getenv("AI_PROVIDER", "openrouter").strip().lower()
     has_ai_key = bool(
         os.getenv("AI_API_KEY")
+        or os.getenv("OPENROUTER_API_KEY")
+        or os.getenv("OPENROUTER_API_KEY_2")
         or os.getenv("GROQ_API_KEY")
         or os.getenv("GEMINI_API_KEY")
         or os.getenv("NVIDIA_API_KEY")

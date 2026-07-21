@@ -15,7 +15,7 @@ services:
   - type: web
     name: truthvortex-api
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./Dockerfile
     dockerContext: ./backend
     plan: free
     healthCheckPath: /health
@@ -25,7 +25,13 @@ services:
           name: truthvortex-db
           property: connectionString
       - key: AI_PROVIDER
-        value: groq
+        value: openrouter
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY_2
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: google/gemma-4-26b-a4b-it:free
       - key: GROQ_API_KEY
         sync: false
       - key: GEMINI_API_KEY
@@ -39,7 +45,7 @@ services:
   - type: cron
     name: truthvortex-scraper
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./Dockerfile
     dockerContext: ./backend
     schedule: "*/30 * * * *"
     dockerCommand: python scraper.py
@@ -49,7 +55,13 @@ services:
           name: truthvortex-db
           property: connectionString
       - key: AI_PROVIDER
-        value: groq
+        value: openrouter
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY_2
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: google/gemma-4-26b-a4b-it:free
       - key: GROQ_API_KEY
         sync: false
       - key: GEMINI_API_KEY

@@ -1,0 +1,17 @@
+# ─── Railway config for the TruthVortex API (web service) ──────────────────
+# Set this service's Root Directory to `backend` in the Railway dashboard.
+# Railway injects $PORT automatically; the Dockerfile CMD already honors it.
+#
+# Provision a Railway Postgres plugin in the same project, then set:
+#   DATABASE_URL = ${{Postgres.DATABASE_URL}}   (reference variable)
+# and the AI keys + CORS origins below (see RAILWAY_DEPLOY.md).
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

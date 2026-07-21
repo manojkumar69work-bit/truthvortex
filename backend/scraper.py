@@ -44,8 +44,13 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY") or os.getenv("NVAPI_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# OpenRouter — two keys supported for redundancy (rotates on rate limit).
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY_2 = os.getenv("OPENROUTER_API_KEY_2")
 
-REQUESTED_PROVIDER = os.getenv("AI_PROVIDER", "nvidia").strip().lower()
+# Default primary provider is OpenRouter (free gemma instruction-tuned model
+# gives clean Telugu with no reasoning-trace leakage); Groq is the fallback.
+REQUESTED_PROVIDER = os.getenv("AI_PROVIDER", "openrouter").strip().lower()
 _OVERRIDE_KEY = os.getenv("AI_API_KEY")
 
 
@@ -67,7 +72,26 @@ def _provider_base_url(provider: str, default: str) -> str:
     return default
 
 
+_OPENROUTER_BASE = "https://openrouter.ai/api/v1"
+# Instruction-tuned (not a reasoning model) so no <think> traces leak into the
+# Telugu summary. Override with OPENROUTER_MODEL if needed.
+_OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
+
 PROVIDERS_BY_NAME = {}
+if OPENROUTER_API_KEY:
+    PROVIDERS_BY_NAME["openrouter"] = {
+        "name": "openrouter",
+        "api_key": _OVERRIDE_KEY or OPENROUTER_API_KEY,
+        "base_url": _provider_base_url("openrouter", _OPENROUTER_BASE),
+        "model": _provider_model("openrouter", _OPENROUTER_MODEL),
+    }
+if OPENROUTER_API_KEY_2:
+    PROVIDERS_BY_NAME["openrouter2"] = {
+        "name": "openrouter2",
+        "api_key": OPENROUTER_API_KEY_2,
+        "base_url": os.getenv("OPENROUTER_BASE_URL", _OPENROUTER_BASE),
+        "model": _OPENROUTER_MODEL,
+    }
 if NVIDIA_API_KEY:
     PROVIDERS_BY_NAME["nvidia"] = {
         "name": "nvidia",
@@ -91,7 +115,7 @@ if GEMINI_API_KEY and GEMINI_API_KEY.startswith("AIza"):
     }
 
 PROVIDERS = []
-for provider_name in [REQUESTED_PROVIDER, "nvidia", "groq", "gemini"]:
+for provider_name in [REQUESTED_PROVIDER, "openrouter", "openrouter2", "groq", "nvidia", "gemini"]:
     provider = PROVIDERS_BY_NAME.get(provider_name)
     if provider and provider not in PROVIDERS:
         PROVIDERS.append(provider)
