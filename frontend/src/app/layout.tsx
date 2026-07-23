@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 
 const siteUrl =
@@ -61,7 +62,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </body>
     </html>
   );
 }
