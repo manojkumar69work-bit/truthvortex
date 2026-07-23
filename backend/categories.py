@@ -38,7 +38,6 @@ SOURCE_CATEGORY_MAP: dict[str, str] = {
     "filmibeat": "movies",
     "pinkvilla": "movies",
     "deadline": "movies",
-    "hollywoodreporter": "movies",
     "hollywood reporter": "movies",
     # business
     "cnbc": "business",
@@ -52,7 +51,6 @@ SOURCE_CATEGORY_MAP: dict[str, str] = {
     "al jazeera": "breaking",
     "tv9": "breaking",
     "ntv": "breaking",
-    "v6velugu": "breaking",
     "v6 velugu": "breaking",
     "telugu360": "breaking",
     "bbc": "breaking",

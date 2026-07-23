@@ -206,16 +206,22 @@ def _startup() -> None:
         or os.getenv("NVIDIA_API_KEY")
         or os.getenv("NVAPI_KEY")
     )
-    if not (os.getenv("DATABASE_URL") or os.getenv("DB_PASSWORD")):
-        logger.warning(
-            "No DATABASE_URL or DB_PASSWORD set; DB connections will likely fail."
-        )
+    has_db = bool(os.getenv("DATABASE_URL") or os.getenv("DB_PASSWORD"))
+
+    if not has_db:
+        logger.error("CRITICAL: No DATABASE_URL or DB_PASSWORD set. DB will fail.")
+        if os.getenv("ENVIRONMENT") == "production":
+            raise RuntimeError("DATABASE_URL or DB_PASSWORD is required in production")
+
     if not has_ai_key:
-        logger.warning(
-            "No AI API key set for provider '%s'; summaries will fall back to "
-            "raw RSS descriptions.",
-            provider,
-        )
+        logger.error("CRITICAL: No AI API key set for provider '%s'. Summaries will be empty.", provider)
+        if os.getenv("ENVIRONMENT") == "production":
+            raise RuntimeError(f"AI API key required for provider '{provider}' in production")
+
+    if has_db:
+        logger.info("Database configuration: OK")
+    if has_ai_key:
+        logger.info("AI provider '%s': key configured", provider)
     logger.info("CORS allowed origins: %s", _cors_origins)
 
     # Don't crash the whole app if the DB is briefly unavailable at boot;

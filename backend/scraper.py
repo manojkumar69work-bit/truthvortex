@@ -1715,7 +1715,6 @@ def _process_article(
         log("    No image found anywhere. Using TruthVortex placeholder.")
         image = FALLBACK_NS_IMAGE
     else:
-        image = clean_image_url(image) or FALLBACK_NS_IMAGE
         log(f"    Image: {image[:80]}")
 
     final_title = title
