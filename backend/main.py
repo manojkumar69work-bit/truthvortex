@@ -18,7 +18,6 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
 from db import get_cursor
@@ -34,8 +33,34 @@ logger = logging.getLogger("truthvortex")
 
 app = FastAPI(title="TruthVortex API")
 
-# ─── Rate limiting (per-IP) ────────────────────────────────────
-limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
+
+# ─── Rate limiting (per-IP, proxy-aware) ────────────────────────────
+def _get_client_ip(request: Request) -> str:
+    """Extract client IP from request, respecting proxy headers.
+
+    Order of precedence:
+    1. X-Forwarded-For (first entry)
+    2. Forwarded (first entry)
+    3. request.client.host (direct connection)
+    """
+    # X-Forwarded-For: client, proxy1, proxy2
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        return xff.split(",")[0].strip()
+
+    # Forwarded: for="[2001:db8::1]"
+    fwd = request.headers.get("forwarded")
+    if fwd:
+        for part in fwd.split(";"):
+            part = part.strip()
+            if part.startswith("for="):
+                return part[4:].strip(' "[]')
+
+    # Fallback to direct connection
+    return request.client.host if request.client else "unknown"
+
+
+limiter = Limiter(key_func=_get_client_ip, default_limits=["120/minute"])
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -49,7 +74,12 @@ async def _security_headers(request: Request, call_next):
     headers.setdefault("X-Frame-Options", "DENY")
     headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     headers.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-    headers.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    # Allow same-origin scripts/styles for potential /api co-hosting; adjust as needed.
+    headers.setdefault(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; font-src 'self' data:; frame-ancestors 'none'",
+    )
     headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
     return response
 
