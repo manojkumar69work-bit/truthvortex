@@ -71,15 +71,22 @@ def get_conn() -> Iterator[psycopg2.extensions.connection]:
     conn = pool.getconn()
     try:
         # Validate connection is alive before yielding.
-        if conn.closed != 0:
-            pool.putconn(conn)
-            conn = pool.getconn()
-        try:
-            with conn.cursor() as cur:
-                cur.execute("SELECT 1;")
-        except Exception:
-            pool.putconn(conn)
-            conn = pool.getconn()
+        # Use a loop with max retries to avoid leaking connections if validation fails repeatedly.
+        for _ in range(3):
+            if conn.closed != 0:
+                pool.putconn(conn)
+                conn = pool.getconn()
+                continue
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("SELECT 1;")
+                break
+            except Exception:
+                pool.putconn(conn)
+                conn = pool.getconn()
+        else:
+            # All retries exhausted; raise the last error
+            raise RuntimeError("Failed to obtain a valid database connection after 3 attempts")
         yield conn
     finally:
         # Roll back any uncommitted transaction before returning to the pool.
