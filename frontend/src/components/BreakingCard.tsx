@@ -1,9 +1,7 @@
-"use client";
-
 import { memo } from "react";
 import { CardShell } from "./CardShell";
 import { SafeImage } from "./SafeImage";
-import { getImage, getText } from "./utils";
+import { getImage, getDirectImage, getText } from "./utils";
 import type { Article } from "./types";
 
 export const BreakingCard = memo(function BreakingCard({
@@ -51,6 +49,7 @@ export const BreakingCard = memo(function BreakingCard({
           <div className="relative h-full w-full overflow-hidden rounded-lg bg-slate-200 shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
             <SafeImage
               src={getImage(article)}
+              fallbackSrc={getDirectImage(article)}
               className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />

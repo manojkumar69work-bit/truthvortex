@@ -2,7 +2,7 @@
 
 import { useEffect, memo, useCallback } from "react";
 import { SafeImage } from "./SafeImage";
-import { getImage, hasValidAiSummary } from "./utils";
+import { getImage, getDirectImage, hasValidAiSummary } from "./utils";
 import { LABELS } from "./constants";
 import type { Article, Category } from "./types";
 
@@ -71,6 +71,7 @@ export const SectionModal = memo(function SectionModal({
                 <div className="overflow-hidden rounded-md bg-slate-100">
                   <SafeImage
                     src={getImage(article)}
+                    fallbackSrc={getDirectImage(article)}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                 </div>

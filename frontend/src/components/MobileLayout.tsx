@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SafeImage } from "./SafeImage";
-import { todayLabel, getImage } from "./utils";
+import { todayLabel, getImage, getDirectImage } from "./utils";
 import { SkeletonCards, SkeletonRows } from "./Skeleton";
 import { MobileEmpty } from "./EmptyState";
 import type { Article, Category, Theme } from "./types";
@@ -224,6 +224,7 @@ const MobileBreakingCard = memo(function MobileBreakingCard({
           <div className="relative h-[215px] overflow-hidden rounded-xl bg-slate-100">
             <SafeImage
               src={getImage(article)}
+              fallbackSrc={getDirectImage(article)}
               className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
             />
           </div>
@@ -294,6 +295,7 @@ const MobileBusinessSection = memo(function MobileBusinessSection({
               <div className="h-[96px] overflow-hidden rounded-lg bg-slate-100">
                 <SafeImage
                   src={getImage(article)}
+                  fallbackSrc={getDirectImage(article)}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
               </div>
@@ -340,6 +342,7 @@ const MobileListSection = memo(function MobileListSection({
               <div className="h-[72px] overflow-hidden rounded-lg bg-slate-100">
                 <SafeImage
                   src={getImage(article)}
+                  fallbackSrc={getDirectImage(article)}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
               </div>
@@ -383,10 +386,11 @@ const MobileCompactSection = memo(function MobileCompactSection({
           className="group grid w-full grid-cols-[112px_1fr] gap-3 text-left"
         >
           <div className="h-[76px] overflow-hidden rounded-lg bg-slate-100">
-            <SafeImage
-              src={getImage(article)}
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            />
+<SafeImage
+                  src={getImage(article)}
+                  fallbackSrc={getDirectImage(article)}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
           </div>
           <div className="min-w-0">
             <h3 className="font-news-headline line-clamp-3 text-[15px] leading-[1.25] text-[#071225] group-hover:text-red-600">

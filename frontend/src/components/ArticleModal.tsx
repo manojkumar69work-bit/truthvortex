@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo, useCallback } from "react";
 import { SafeImage } from "./SafeImage";
-import { getImage, getText } from "./utils";
+import { getImage, getDirectImage, getText } from "./utils";
 import { LABELS } from "./constants";
 import type { ActiveArticle } from "./types";
 
@@ -115,6 +115,7 @@ export const ArticleModal = memo(function ArticleModal({
           <div className="flex max-h-[42vh] min-h-[260px] w-full items-center justify-center bg-slate-100 sm:max-h-[48vh]">
             <SafeImage
               src={getImage(article)}
+              fallbackSrc={getDirectImage(article)}
               className="max-h-[42vh] w-full object-contain sm:max-h-[48vh]"
             />
           </div>

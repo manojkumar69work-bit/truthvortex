@@ -2,7 +2,7 @@
 
 import { memo, type ReactNode } from "react";
 import { SafeImage } from "./SafeImage";
-import { getImage } from "./utils";
+import { getImage, getDirectImage } from "./utils";
 import type { Article } from "./types";
 
 export const CardShell = memo(function CardShell({
@@ -52,6 +52,7 @@ export const ImageBox = memo(function ImageBox({ article }: { article: Article }
     <div className="h-full w-full overflow-hidden rounded-md bg-slate-100 shadow-[inset_0_0_0_1px_rgba(15,23,42,0.04)]">
       <SafeImage
         src={getImage(article)}
+        fallbackSrc={getDirectImage(article)}
         className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
       />
     </div>

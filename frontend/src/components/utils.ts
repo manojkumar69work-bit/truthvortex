@@ -84,7 +84,18 @@ export function getImage(article?: Article | null) {
 
   if (!image || image.startsWith("data:")) return FALLBACK_IMAGE;
 
-  return `https://images.weserv.nl/?url=${encodeURIComponent(image)}&w=600&output=webp&q=80`;
+  // Try direct image first; if it fails (CORS/blocked), fallback to wsrv
+  const wsrvUrl = `https://images.weserv.nl/?url=${encodeURIComponent(image)}&w=600&output=webp&q=80`;
+
+  // We can't easily detect failure here without loading twice, so return wsrv
+  // as primary but add data-original for potential client-side fallback
+  return wsrvUrl;
+}
+
+export function getDirectImage(article?: Article | null) {
+  const image = article?.image?.trim();
+  if (!image || image.startsWith("data:")) return FALLBACK_IMAGE;
+  return image;
 }
 
 export function todayLabel() {

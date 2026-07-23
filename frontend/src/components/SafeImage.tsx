@@ -3,13 +3,23 @@
 import { useState, useEffect, memo } from "react";
 import { FALLBACK_IMAGE } from "./constants";
 
-function SafeImageComponent({ src, className }: { src: string; className: string }) {
+function SafeImageComponent({ 
+  src, 
+  className, 
+  fallbackSrc 
+}: { 
+  src: string; 
+  className: string;
+  fallbackSrc?: string;
+}) {
   const [finalSrc, setFinalSrc] = useState(src || FALLBACK_IMAGE);
   const [loaded, setLoaded] = useState(false);
+  const [triedFallback, setTriedFallback] = useState(false);
 
   useEffect(() => {
     setFinalSrc(src || FALLBACK_IMAGE);
     setLoaded(false);
+    setTriedFallback(false);
   }, [src]);
 
   return (
@@ -25,8 +35,13 @@ function SafeImageComponent({ src, className }: { src: string; className: string
         className={`h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
         onLoad={() => setLoaded(true)}
         onError={() => {
-          setFinalSrc(FALLBACK_IMAGE);
-          setLoaded(true);
+          if (!triedFallback && fallbackSrc && fallbackSrc !== finalSrc) {
+            setTriedFallback(true);
+            setFinalSrc(fallbackSrc);
+          } else {
+            setFinalSrc(FALLBACK_IMAGE);
+            setLoaded(true);
+          }
         }}
       />
     </div>

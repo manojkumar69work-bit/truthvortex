@@ -612,7 +612,7 @@ def choose_final_category(title: str, text: str, source_category: str) -> str:
     return cats.normalize(source_category)
 
 
-def is_duplicate_title(title: str, existing_titles: set, threshold: int = 92) -> bool:
+def is_duplicate_title(title: str, existing_titles: set, threshold: int = 85) -> bool:
     """Fuzzy dedup against existing titles (O(n) by nature of fuzzy comparison)."""
     title_l = title.lower().strip()
 
