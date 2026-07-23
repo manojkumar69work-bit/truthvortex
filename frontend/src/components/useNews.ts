@@ -11,6 +11,9 @@ export function useNews() {
   const [error, setError] = useState("");
 
   const fetchNews = useCallback(async () => {
+    if (typeof document !== "undefined" && document.hidden) {
+      return;
+    }
     try {
       setError("");
 
@@ -44,9 +47,20 @@ export function useNews() {
   useEffect(() => {
     fetchNews();
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchNews();
+      }
+    };
+
     const interval = window.setInterval(fetchNews, REFRESH_MS);
 
-    return () => window.clearInterval(interval);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [fetchNews]);
 
   const grouped = useMemo(() => {

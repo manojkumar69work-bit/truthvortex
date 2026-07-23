@@ -104,13 +104,13 @@ export default function Home() {
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setBusinessIndex((i) => i + 3);
-      setSportsIndex((i) => i + 4);
-      setCrimeIndex((i) => i + 1);
-      setMoviesIndex((i) => i + 1);
+      setBusinessIndex((i) => (i + 3) % Math.max(businessArticles.length, 1));
+      setSportsIndex((i) => (i + 4) % Math.max(sportsArticles.length, 1));
+      setCrimeIndex((i) => (i + 1) % Math.max(crimeArticles.length, 1));
+      setMoviesIndex((i) => (i + 1) % Math.max(moviesArticles.length, 1));
     }, SECTION_ROTATE_MS);
     return () => window.clearInterval(interval);
-  }, []);
+  }, [businessArticles.length, sportsArticles.length, crimeArticles.length, moviesArticles.length]);
 
   // ── Derived visible articles ──
   const activeBreaking =
