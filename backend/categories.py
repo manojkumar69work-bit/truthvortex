@@ -75,9 +75,44 @@ def is_valid(category: str | None) -> bool:
 
 
 def normalize(category: str | None) -> str:
-    """Coerce a free-form category string into a known one, or default."""
-    if category and category.lower().strip() in VALID_CATEGORIES:
-        return category.lower().strip()
+    """Coerce a free-form category string into a known one, or default.
+
+    Handles common aliases to match frontend's normalizeCategory():
+    - finance, business & finance, market, technology, tech → business
+    - entertainment, movie, film, cinema → movies
+    - sport, cricket → sports
+    - crime, police → crime
+    """
+    if not category:
+        return DEFAULT_CATEGORY
+
+    cat = category.lower().strip()
+
+    if cat in VALID_CATEGORIES:
+        return cat
+
+    # Business/finance aliases
+    if cat in ("finance", "business & finance"):
+        return "business"
+    if any(kw in cat for kw in ("business", "finance", "market", "technology", "tech")):
+        return "business"
+
+    # Movies/entertainment aliases
+    if cat in ("entertainment", "movie"):
+        return "movies"
+    if any(kw in cat for kw in ("film", "cinema", "movie", "entertainment")):
+        return "movies"
+
+    # Sports aliases
+    if cat == "sport":
+        return "sports"
+    if any(kw in cat for kw in ("sport", "cricket")):
+        return "sports"
+
+    # Crime aliases
+    if any(kw in cat for kw in ("crime", "police")):
+        return "crime"
+
     return DEFAULT_CATEGORY
 
 
