@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import logging
 import os
+import threading
+import time
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
@@ -32,6 +34,37 @@ logging.basicConfig(
 logger = logging.getLogger("truthvortex")
 
 app = FastAPI(title="TruthVortex API")
+
+
+# ─── Background scraper (runs every 30 min) ───────────────────
+_SCRAPER_INTERVAL = int(os.getenv("SCRAPER_INTERVAL_MINUTES", "30")) * 60
+_scraper_thread: threading.Thread | None = None
+_scraper_stop = threading.Event()
+
+
+def _run_scraper_loop() -> None:
+    from scraper import run_scraper
+
+    while not _scraper_stop.is_set():
+        try:
+            logger.info("Background scraper starting...")
+            run_scraper()
+            logger.info("Background scraper finished.")
+        except Exception as exc:
+            logger.error("Background scraper error: %s", exc)
+        _scraper_stop.wait(_SCRAPER_INTERVAL)
+
+
+def _start_background_scraper() -> None:
+    global _scraper_thread
+    if os.getenv("DISABLE_BACKGROUND_SCRAPER"):
+        logger.info("Background scraper disabled via DISABLE_BACKGROUND_SCRAPER")
+        return
+    if _scraper_thread is not None and _scraper_thread.is_alive():
+        return
+    _scraper_thread = threading.Thread(target=_run_scraper_loop, daemon=True)
+    _scraper_thread.start()
+    logger.info("Background scraper thread started (every %ss).", _SCRAPER_INTERVAL)
 
 
 # ─── Rate limiting (per-IP, proxy-aware) ────────────────────────────
@@ -230,6 +263,8 @@ def _startup() -> None:
         ensure_schema()
     except Exception as exc:  # noqa: BLE001
         logger.warning("ensure_schema failed (will retry on demand): %s", exc)
+
+    _start_background_scraper()
 
 
 @app.on_event("shutdown")
