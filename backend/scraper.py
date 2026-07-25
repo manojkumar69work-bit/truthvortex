@@ -115,7 +115,7 @@ if GEMINI_API_KEY and GEMINI_API_KEY.startswith("AIza"):
     }
 
 PROVIDERS = []
-for provider_name in [REQUESTED_PROVIDER, "openrouter", "openrouter2", "groq", "nvidia", "gemini"]:
+for provider_name in [REQUESTED_PROVIDER, "openrouter", "openrouter2", "nvidia", "groq", "gemini"]:
     provider = PROVIDERS_BY_NAME.get(provider_name)
     if provider and provider not in PROVIDERS:
         PROVIDERS.append(provider)

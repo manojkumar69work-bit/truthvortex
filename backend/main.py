@@ -243,7 +243,7 @@ def _shutdown() -> None:
 def root() -> dict[str, Any]:
     return {
         "message": "TruthVortex API is running",
-        "endpoints": ["/news", "/news/{category}", "/search", "/health"],
+        "endpoints": ["/news", "/news/{category}", "/search", "/scrape", "/health"],
     }
 
 
@@ -298,6 +298,20 @@ def get_news_by_category(
         )
         rows = cur.fetchall()
     return _allowed_articles(rows, limit)
+
+
+@app.post("/scrape")
+def trigger_scrape(request: Request) -> dict[str, Any]:
+    token = request.headers.get("authorization", "").removeprefix("Bearer ")
+    expected = os.getenv("SCRAPE_API_TOKEN", "")
+    if expected and token != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    from scraper import run_scraper
+    try:
+        run_scraper()
+        return {"status": "ok", "message": "Scrape completed"}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @app.get("/search")
