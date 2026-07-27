@@ -11,11 +11,12 @@ if not logger.handlers:
     logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
     logger.propagate = False
 import re
+import sys
 import threading
 import time
 import html
 import calendar
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
@@ -188,6 +189,10 @@ SUMMARY_LANGUAGE = "Telugu"
 MAX_ENTRIES_PER_SOURCE = int(os.getenv("MAX_ENTRIES_PER_SOURCE", "6"))
 # All sources are copyright-safe — run sequentially to avoid Groq API rate limits.
 MAX_CONCURRENT_SOURCES = int(os.getenv("MAX_CONCURRENT_SOURCES", "1"))
+
+# Articles older than this are deleted at the start of every scrape cycle, and
+# feed entries already older than this are never ingested. 0 disables purging.
+ARTICLE_RETENTION_DAYS = int(os.getenv("ARTICLE_RETENTION_DAYS", "2"))
 
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "12"))
 PAGE_IMAGE_TIMEOUT = int(os.getenv("PAGE_IMAGE_TIMEOUT", "6"))
@@ -499,6 +504,30 @@ def ensure_table():
             "ALTER TABLE news ADD COLUMN IF NOT EXISTS title_original TEXT;"
         )
     log("Database table ready.")
+
+
+def purge_old_articles(days: int = None) -> int:
+    """Delete articles older than ``days``. Returns the number of rows deleted.
+
+    ``published`` is stored as a naive UTC timestamp (feed dates are converted
+    to UTC before insert), so the cutoff is computed in UTC too rather than in
+    the server's local timezone.
+    """
+    days = ARTICLE_RETENTION_DAYS if days is None else days
+    if days <= 0:
+        log("Retention purge disabled (ARTICLE_RETENTION_DAYS <= 0).")
+        return 0
+
+    with get_cursor(commit=True) as cur:
+        cur.execute(
+            "DELETE FROM news "
+            "WHERE published < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
+            (days,),
+        )
+        deleted = cur.rowcount or 0
+
+    log(f"Retention purge: deleted {deleted} article(s) older than {days} day(s).")
+    return deleted
 
 
 def _entry_published_dt(entry) -> datetime | None:
@@ -1643,6 +1672,22 @@ def _scrape_source(source_config: dict) -> tuple[str, list[dict]]:
         return name, []
 
 
+def _is_expired(published_dt: datetime | None) -> bool:
+    """True when a feed entry is already past the retention window.
+
+    Ingesting such an entry would only mean paying for an AI summary that the
+    next cycle's purge deletes. Entries with no date are treated as fresh.
+    """
+    if ARTICLE_RETENTION_DAYS <= 0 or published_dt is None:
+        return False
+
+    if published_dt.tzinfo is None:
+        published_dt = published_dt.replace(tzinfo=timezone.utc)
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=ARTICLE_RETENTION_DAYS)
+    return published_dt < cutoff
+
+
 def _process_article(
     item: dict,
     existing_titles_set: set,
@@ -1660,6 +1705,11 @@ def _process_article(
 
     if not title or not link:
         log("    Skipped: missing title or link")
+        return None
+
+    if _is_expired(published_dt):
+        total_seen["too_old"] += 1
+        log(f"    Skipped: older than {ARTICLE_RETENTION_DAYS} day(s)")
         return None
 
     if is_blocked_source(source):
@@ -1813,6 +1863,13 @@ def run_scraper():
 
     ensure_table()
 
+    # Drop expired articles first, so the dedup set below doesn't keep titles
+    # we've just deleted (which would block re-ingesting a still-live story).
+    try:
+        purge_old_articles()
+    except Exception as exc:  # noqa: BLE001
+        log(f"  ✗ Retention purge failed: {exc}")
+
     log("Loading existing titles for dedup...")
     # Dedup on the RAW source title (title_original), because the `title`
     # column stores the AI-generated Telugu headline — comparing a raw English
@@ -1829,6 +1886,7 @@ def run_scraper():
     counters = {
         "seen": 0,
         "dup": 0,
+        "too_old": 0,
         "ignored": 0,
         "placeholder": 0,
         "short_article": 0,
@@ -1916,6 +1974,7 @@ def run_scraper():
     log("Cycle done!")
     log(f"Total articles checked: {counters['seen']}")
     log(f"Duplicates skipped: {counters['dup']}")
+    log(f"Older than retention window: {counters['too_old']}")
     log(f"Irrelevant ignored: {counters['ignored']}")
     log(f"Placeholder skipped: {counters['placeholder']}")
     log(f"Short full article (fell back to RSS): {counters['short_article']}")
@@ -1928,4 +1987,10 @@ def run_scraper():
 
 
 if __name__ == "__main__":
-    run_scraper()
+    # `python scraper.py --purge-only` just applies the retention window,
+    # for use as a standalone cron job.
+    if "--purge-only" in sys.argv[1:]:
+        ensure_table()
+        purge_old_articles()
+    else:
+        run_scraper()
