@@ -72,3 +72,6 @@ services:
         value: "false"
       - key: MAX_CONCURRENT_SOURCES
         value: "5"
+      # Every cycle deletes articles older than this many days.
+      - key: ARTICLE_RETENTION_DAYS
+        value: "2"

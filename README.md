@@ -106,6 +106,7 @@ cd backend && .venv/bin/python check_feeds.py
 | `MAX_CONCURRENT_SOURCES` | No | `5` on Render, `1` local (default) |
 | `SCRAPE_API_TOKEN` | No | Bearer token for `/scrape` endpoint |
 | `SCRAPER_INTERVAL_MINUTES` | No | `30` (default) |
+| `ARTICLE_RETENTION_DAYS` | No | `2` (default); `0` keeps articles forever |
 
 ### Frontend (`frontend/.env.local`)
 
@@ -119,6 +120,8 @@ cd backend && .venv/bin/python check_feeds.py
 - **Telugu AI summaries** (5–8 lines) direct from LLM
 - **Multi-provider fallback** (OpenRouter → NVIDIA → Groq) for reliability
 - **Background auto-scraper** runs every 30 minutes
+- **2-day retention** — each cycle deletes articles older than
+  `ARTICLE_RETENTION_DAYS` (2) and skips feed entries already that old
 - **Light/dark theme toggle**, persisted to `localStorage`, respects OS preference
 - **Preview → detail** article view with prev/next navigation (keyboard arrows,
   touch swipe) and Share button (Web Share API + clipboard fallback)
