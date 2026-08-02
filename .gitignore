@@ -64,3 +64,4 @@ dist/
 build/
 *.egg-info/
 .vercel
+frontend/tsconfig.tsbuildinfo
