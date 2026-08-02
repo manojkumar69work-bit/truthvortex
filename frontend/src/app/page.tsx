@@ -199,7 +199,11 @@ export default function Home() {
 
         html,
         body {
-          background: #f8fafc;
+          background: #ffffff;
+        }
+
+        body:has(.tv-dark) {
+          background: #120f1a;
         }
 
         .font-news-headline {

@@ -1,5 +1,5 @@
 /* Google Fonts must be imported before any other rules per CSS spec. */
-@import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap");
 @import "tailwindcss";
 
 .font-telugu-headline {
@@ -11,79 +11,178 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Dark theme — toggled at runtime by adding the .tv-dark class on the root
-   wrapper (see page.tsx). These rules are intentionally unlayered so they win
-   over Tailwind's layered utilities. Layout is untouched; only colors change.
-   In light mode (.tv-dark absent) these rules have zero effect.
+   PAPER THEME — newsprint, not glass.
+   All colour lives in the vars below; .tv-dark just swaps them (ink-on-black
+   newsprint). Rules are unlayered so they beat Tailwind's layered utilities,
+   and target the utility class names the components already use — layout and
+   markup are untouched.
 --------------------------------------------------------------------------- */
-body:has(.tv-dark) {
-  background: #0b1120;
+.tv-root {
+  --paper: #ffffff;      /* page stock        */
+  --card: #ffffff;       /* card stock        */
+  --card-2: #f5f3ff;     /* recessed panels   */
+  --ink: #1a1424;        /* body ink          */
+  --ink-soft: #4c4560;
+  --ink-faint: #8b84a3;
+  --rule: #e2ddf2;       /* hairline rules    */
+  --rule-strong: #4c1d95; /* column rules     */
+  --accent: #6d28d9;     /* violet            */
+  --accent-soft: #ede9fe;
 }
 
 .tv-dark {
-  min-height: 100vh;
-  background: #0b1120;
+  --paper: #120f1a;
+  --card: #1a1626;
+  --card-2: #241f36;
+  --ink: #ece9f5;
+  --ink-soft: #b9b2cf;
+  --ink-faint: #8b84a3;
+  --rule: #322a4a;
+  --rule-strong: #7c5cd6;
+  --accent: #a78bfa;
+  --accent-soft: #2a2140;
   color-scheme: dark;
 }
 
-.tv-dark .bg-\[\#f8fafc\],
-.tv-dark .bg-\[\#f7f7f7\] {
-  background-color: #0b1120;
+body:has(.tv-root),
+html:has(.tv-root) {
+  background: var(--paper);
 }
 
-.tv-dark .bg-white,
-.tv-dark .bg-white\/90 {
-  background-color: #111827;
+.tv-root {
+  min-height: 100vh;
+  background-color: var(--paper);
+  color: var(--ink);
 }
 
-.tv-dark .bg-slate-50 {
-  background-color: #0f172a;
+/* ── kill the glass: no blur, no gradients, no bloom shadows ── */
+.tv-root [class*="backdrop-blur"] {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-.tv-dark .bg-slate-100 {
-  background-color: #1e293b;
-}
-
-.tv-dark .bg-slate-200 {
-  background-color: #334155;
-}
-
-.tv-dark .bg-\[\#eeeeee\] {
-  background-color: #1e293b;
-}
-
-.tv-dark .bg-\[\#071225\] {
-  background-color: #334155;
-}
-
-.tv-dark .bg-gradient-to-br {
+.tv-root [class*="bg-gradient-to"] {
   background-image: none;
-  background-color: #111827;
 }
 
-.tv-dark .text-\[\#071225\],
-.tv-dark .text-\[\#070b13\] {
-  color: #e5e7eb;
+.tv-root [class*="shadow-"] {
+  box-shadow: none;
 }
 
-.tv-dark .text-slate-700,
-.tv-dark .text-slate-600 {
-  color: #cbd5e1;
+/* ── soft corners on everything that has a radius (dots stay round) ── */
+.tv-root [class*="rounded-"]:not([class*="rounded-full"]) {
+  border-radius: 10px;
 }
 
-.tv-dark .text-slate-500,
-.tv-dark .text-slate-400 {
-  color: #94a3b8;
+/* ── surfaces ── */
+.tv-root .bg-\[\#f8fafc\],
+.tv-root .bg-\[\#f7f7f7\] {
+  background-color: transparent;
 }
 
-.tv-dark .border-slate-200,
-.tv-dark .border-slate-200\/90,
-.tv-dark .border-slate-100 {
-  border-color: #1f2937;
+.tv-root .bg-white,
+.tv-root .bg-white\/90,
+.tv-root .bg-white\/60 {
+  background-color: var(--card);
 }
 
-.tv-dark .divide-slate-100 > * {
-  border-color: #1f2937;
+.tv-root .bg-slate-50,
+.tv-root .bg-\[\#eeeeee\] {
+  background-color: var(--card-2);
+}
+
+.tv-root .bg-slate-100,
+.tv-root .bg-slate-200 {
+  background-color: var(--card-2);
+}
+
+.tv-root .bg-\[\#071225\] {
+  background-color: var(--ink);
+}
+
+/* ── ink ── */
+.tv-root .text-\[\#071225\],
+.tv-root .text-\[\#070b13\] {
+  color: var(--ink);
+}
+
+.tv-root .text-slate-700,
+.tv-root .text-slate-600 {
+  color: var(--ink-soft);
+}
+
+.tv-root .text-slate-500,
+.tv-root .text-slate-400 {
+  color: var(--ink-faint);
+}
+
+.tv-root .text-white {
+  color: var(--card);
+}
+
+/* ── press red ── */
+.tv-root .text-red-600,
+.tv-root .text-red-500,
+.tv-root .text-red-700 {
+  color: var(--accent);
+}
+
+.tv-root .bg-red-600 {
+  background-color: var(--accent);
+}
+
+.tv-root .bg-red-50,
+.tv-root .bg-red-300\/45,
+.tv-root .bg-orange-300,
+.tv-root .bg-orange-300\/50 {
+  background-color: var(--accent-soft);
+}
+
+/* ── hairline rules instead of drop shadows ── */
+.tv-root .border-slate-200,
+.tv-root .border-slate-200\/90,
+.tv-root .border-slate-100,
+.tv-root .border-red-100,
+.tv-root .border-orange-100,
+.tv-root .border-orange-200,
+.tv-root .border-red-300 {
+  border-color: var(--rule);
+}
+
+.tv-root .divide-slate-100 > * {
+  border-color: var(--rule);
+}
+
+/* no cards on desktop — cells are separated by black column rules only */
+.tv-root .tv-cell {
+  border-color: var(--rule-strong);
+}
+
+/* mobile sections keep a hairline box (scrolling layout needs the edge) */
+.tv-root .bg-white:not(.tv-cell) {
+  border: 1px solid var(--rule);
+}
+
+/* section kicker: double rule under the header, like a masthead deck */
+.tv-root .border-b.border-slate-100 {
+  border-bottom: 3px double var(--rule-strong);
+}
+
+/* the red tab before a section title reads as a printed marker */
+.tv-root .bg-red-600.h-5 {
+  background-color: var(--accent);
+}
+
+/* ── typography ──
+   Serif is for the masthead ONLY. Headlines stay on Ramabhadra/Telugu and
+   kickers stay sans — serif at 11px with wide tracking reads as mush. */
+.tv-root h1 {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
+}
+
+.tv-root .uppercase {
+  font-weight: 700;
 }
 
 /* ─── Modal / overlay animations ─── */
