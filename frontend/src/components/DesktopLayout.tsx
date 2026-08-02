@@ -40,8 +40,8 @@ export const DesktopLayout = memo(function DesktopLayout({
 }) {
   return (
     <main className="hidden h-screen w-screen overflow-hidden bg-[#f8fafc] text-[#071225] lg:block">
-      <div className="flex h-full w-full gap-5 px-5 py-4">
-        <section className="flex min-w-0 flex-1 flex-col gap-4">
+      <div className="flex h-full w-full px-6 py-3">
+        <section className="flex min-w-0 flex-1 flex-col">
           <Header
             mounted={mounted}
             tickerArticle={tickerArticle}
@@ -49,7 +49,7 @@ export const DesktopLayout = memo(function DesktopLayout({
             onToggleTheme={onToggleTheme}
           />
 
-          <section className="grid min-h-0 flex-1 grid-cols-[1.55fr_0.7fr_0.9fr] grid-rows-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(180px,1.1fr)] gap-5">
+          <section className="grid min-h-0 flex-1 grid-cols-[1.55fr_0.7fr_0.9fr] grid-rows-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(180px,1.1fr)]">
             <BusinessCard
               articles={businessArticles}
               loading={loading}
@@ -88,7 +88,7 @@ export const DesktopLayout = memo(function DesktopLayout({
           </section>
         </section>
 
-        <aside className="hidden w-[230px] shrink-0 overflow-hidden rounded-xl border border-orange-100 bg-gradient-to-b from-[#fff7ed] via-[#fff1f2] to-[#fed7aa] shadow-[0_10px_28px_rgba(15,23,42,0.06)] xl:flex">
+        <aside className="tv-cell ml-4 hidden w-[210px] shrink-0 overflow-hidden border-l pl-4 xl:flex">
           <div className="relative flex h-full w-full flex-col items-center justify-center px-6 text-center">
             <div className="absolute left-6 top-8 h-5 w-5 rounded-full bg-orange-300" />
             <div className="absolute right-8 top-20 h-20 w-20 rounded-full border border-orange-200" />

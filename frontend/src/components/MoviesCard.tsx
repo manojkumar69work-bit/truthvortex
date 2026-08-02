@@ -18,7 +18,7 @@ export const MoviesCard = memo(function MoviesCard({
   onOpenSection: () => void;
 }) {
   return (
-    <CardShell className="col-start-3 row-start-3 h-full p-4">
+    <CardShell className="col-start-3 row-start-3 h-full px-4 py-3">
       <CardHeader title="Movies" onOpenSection={onOpenSection} />
 
       {loading ? (

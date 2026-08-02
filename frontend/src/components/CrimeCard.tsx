@@ -18,7 +18,7 @@ export const CrimeCard = memo(function CrimeCard({
   onOpenSection: () => void;
 }) {
   return (
-    <CardShell className="col-start-2 row-start-1 h-full p-4">
+    <CardShell className="col-start-2 row-start-1 h-full border-b border-r px-4 py-3">
       <CardHeader title="Crime" onOpenSection={onOpenSection} />
 
       {loading ? (

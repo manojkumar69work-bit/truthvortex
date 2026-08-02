@@ -18,8 +18,8 @@ export const BreakingCard = memo(function BreakingCard({
   onOpenSection: () => void;
 }) {
   return (
-    <CardShell className="relative col-span-2 col-start-1 row-span-2 row-start-2 h-full border-red-100 bg-gradient-to-br from-white via-[#fffafa] to-[#fff1f2]">
-      <div className="absolute right-5 top-5 z-20">
+    <CardShell className="relative col-span-2 col-start-1 row-span-2 row-start-2 h-full border-r">
+      <div className="absolute right-4 top-3 z-20">
         <button
           type="button"
           onClick={(event) => {
@@ -44,7 +44,7 @@ export const BreakingCard = memo(function BreakingCard({
         <button
           type="button"
           onClick={() => onOpen(article)}
-          className="group grid h-full w-full grid-cols-2 overflow-hidden p-5 text-left"
+          className="group grid h-full w-full grid-cols-2 overflow-hidden px-4 py-3 text-left"
         >
           <div className="relative h-full w-full overflow-hidden rounded-lg bg-slate-200 shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
             <SafeImage

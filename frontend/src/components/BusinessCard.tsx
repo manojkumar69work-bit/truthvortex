@@ -18,7 +18,7 @@ export const BusinessCard = memo(function BusinessCard({
   onOpenSection: () => void;
 }) {
   return (
-    <CardShell className="col-start-1 row-start-1 h-full p-4">
+    <CardShell className="col-start-1 row-start-1 h-full border-b border-r px-4 py-3">
       <CardHeader title="Business & Technology" onOpenSection={onOpenSection} />
 
       {loading ? (

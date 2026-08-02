@@ -13,9 +13,7 @@ export const CardShell = memo(function CardShell({
   className?: string;
 }) {
   return (
-    <div
-      className={`overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition duration-300 hover:shadow-[0_18px_40px_rgba(15,23,42,0.1)] ${className}`}
-    >
+    <div className={`tv-cell overflow-hidden ${className}`}>
       {children}
     </div>
   );

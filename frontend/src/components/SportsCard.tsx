@@ -18,7 +18,7 @@ export const SportsCard = memo(function SportsCard({
   onOpenSection: () => void;
 }) {
   return (
-    <CardShell className="col-start-3 row-span-2 row-start-1 h-full p-4">
+    <CardShell className="col-start-3 row-span-2 row-start-1 h-full border-b px-4 py-3">
       <CardHeader title="Sports" onOpenSection={onOpenSection} />
 
       {loading ? (

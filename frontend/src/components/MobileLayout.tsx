@@ -127,8 +127,8 @@ const MobileHeader = memo(function MobileHeader({
     <header className="relative z-30 flex items-start justify-between pt-2">
       <div>
         <h1 className="text-[25px] font-black leading-none tracking-[-0.05em]">
-          <span>News</span>
-          <span className="text-red-600">Sphere</span>
+          <span>Truth</span>
+          <span className="text-red-600">Vortex</span>
         </h1>
         <p className="mt-2 text-[12px] font-semibold text-slate-500">
           {mounted ? todayLabel() : ""}
