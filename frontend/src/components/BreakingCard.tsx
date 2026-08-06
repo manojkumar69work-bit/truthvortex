@@ -59,10 +59,10 @@ export const BreakingCard = memo(function BreakingCard({
           </div>
 
           <div className="flex min-w-0 flex-col justify-center px-7 text-[#071225]">
-            <h2 className="font-news-headline line-clamp-4 text-[36px] leading-[1.08] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+            <h2 className="font-news-headline line-clamp-4 text-[32px] leading-[1.14] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
               {article.title}
             </h2>
-            <p className="font-news-summary mt-4 line-clamp-6 whitespace-normal text-[18px] leading-8 text-slate-600">
+            <p className="font-news-summary mt-4 line-clamp-6 whitespace-normal text-[17px] leading-7 text-slate-600">
               {getText(article)}
             </p>
             <div className="mt-6">

@@ -34,7 +34,7 @@ export const BusinessCard = memo(function BusinessCard({
             >
               <ImageBox article={article} />
               <div className="flex min-w-0 items-start overflow-hidden">
-                <h3 className="font-news-headline line-clamp-4 text-[22px] leading-[1.16] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+                <h3 className="font-news-headline line-clamp-4 text-[20px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
                   {article.title}
                 </h3>
               </div>

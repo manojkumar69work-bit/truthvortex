@@ -31,7 +31,7 @@ export const MoviesCard = memo(function MoviesCard({
         >
           <ImageBox article={article} />
           <div className="flex min-w-0 items-center">
-            <h3 className="font-news-headline line-clamp-5 text-[23px] leading-[1.16] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+            <h3 className="font-news-headline line-clamp-5 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
               {article.title}
             </h3>
           </div>

@@ -76,7 +76,7 @@ export const SectionModal = memo(function SectionModal({
                   />
                 </div>
                 <div className="flex min-h-0 flex-col justify-center overflow-hidden px-1">
-                  <h3 className="font-news-headline line-clamp-5 text-[20px] leading-[1.12] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600 sm:text-[22px]">
+                  <h3 className="font-news-headline line-clamp-5 text-[19px] leading-[1.2] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600 sm:text-[20px]">
                     {article.title}
                   </h3>
                 </div>
