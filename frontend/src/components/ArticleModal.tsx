@@ -59,13 +59,6 @@ export const ArticleModal = memo(function ArticleModal({
     }
   }
 
-  function handleTouchEnd() {
-    if (touchStart === null) return;
-
-    const distance = touchStart - (touchStart - 1); // reset
-    // Use a ref-based approach instead
-  }
-
   return (
     <div
       className="fixed inset-0 z-50 flex animate-fadeIn items-center justify-center bg-slate-950/60 p-0 backdrop-blur-sm sm:p-4"
@@ -125,7 +118,7 @@ export const ArticleModal = memo(function ArticleModal({
               <span>{article.source || "TruthVortex"}</span>
             </div>
 
-            <h2 className="font-news-headline text-[30px] leading-[1.12] tracking-[-0.03em] text-[#071225] sm:text-4xl sm:leading-tight">
+            <h2 className="font-news-headline text-[27px] leading-[1.18] tracking-[-0.03em] text-[#071225] sm:text-4xl sm:leading-tight">
               {article.title}
             </h2>
 
@@ -145,7 +138,8 @@ export const ArticleModal = memo(function ArticleModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 border-t border-slate-100 bg-white">
+        {/* mobile navigates by swipe (onTouchMove above); desktop by these + arrow keys */}
+        <div className="hidden grid-cols-2 border-t border-slate-100 bg-white sm:grid">
           <button
             type="button"
             onClick={onPrev}
