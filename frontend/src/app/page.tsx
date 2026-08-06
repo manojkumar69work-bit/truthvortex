@@ -195,8 +195,6 @@ export default function Home() {
   return (
     <div className={theme === "dark" ? "tv-root tv-dark" : "tv-root"}>
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800;900&display=swap");
-
         html,
         body {
           background: #ffffff;
@@ -206,14 +204,25 @@ export default function Home() {
           background: #120f1a;
         }
 
+        /* Noto Sans Telugu, not Ramabhadra: Ramabhadra ships weight 400 only,
+           so font-weight:700 was synthetic bold — smeared conjuncts. */
+        /* Telugu marks sit above the Latin ascender (ీ ై ొ) and below the
+           descender (ు ృ), so at these tight line-heights the glyph overflows
+           the line box and overflow:hidden — needed by line-clamp/truncate —
+           shears it. Padding both edges gives the overflow room inside the
+           clipped padding box. */
+        .font-news-headline,
+        .font-news-summary {
+          font-family: "Noto Sans Telugu", Gautami, sans-serif;
+          padding-top: 0.2em;
+          padding-bottom: 0.14em;
+        }
+
         .font-news-headline {
-          font-family:
-            "Ramabhadra", "Noto Sans Telugu", Gautami, Vani, sans-serif;
           font-weight: 700;
         }
 
         .font-news-summary {
-          font-family: Vani, "Noto Sans Telugu", Gautami, sans-serif;
           font-weight: 400;
         }
 

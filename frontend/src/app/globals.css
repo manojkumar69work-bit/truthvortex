@@ -2,14 +2,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap");
 @import "tailwindcss";
 
-.font-telugu-headline {
-  font-family: "Ramabhadra", "Noto Sans Telugu", Gautami, Vani, sans-serif;
-}
-
-.font-telugu-summary {
-  font-family: Vani, "Noto Sans Telugu", Gautami, sans-serif;
-}
-
 /* ---------------------------------------------------------------------------
    PAPER THEME — newsprint, not glass.
    All colour lives in the vars below; .tv-dark just swaps them (ink-on-black

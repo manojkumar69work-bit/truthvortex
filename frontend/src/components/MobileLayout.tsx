@@ -191,7 +191,7 @@ const MobileTicker = memo(function MobileTicker({ article }: { article?: Article
   return (
     <section className="mt-5 flex h-[42px] items-center gap-3 overflow-hidden rounded-xl border border-slate-100 bg-white px-3 shadow-[0_8px_24px_rgba(15,23,42,0.07)]">
       <span className="blink-dot h-2.5 w-2.5 shrink-0 rounded-full bg-red-600" />
-      <p className="font-news-headline line-clamp-1 min-w-0 text-[13px] leading-none text-[#071225]">
+      <p className="font-news-headline line-clamp-1 min-w-0 text-[13px] leading-[1.35] text-[#071225]">
         {article?.title || "AI summarized headlines will appear here."}
       </p>
     </section>
