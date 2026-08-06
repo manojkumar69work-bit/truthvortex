@@ -2,7 +2,7 @@ import { memo } from "react";
 
 export const EmptyText = memo(function EmptyText({ text }: { text: string }) {
   return (
-    <div className="flex h-[calc(100%-42px)] items-center justify-center rounded-md bg-slate-50 p-4 text-center text-[12px] font-bold text-slate-400">
+    <div className="flex h-[calc(100%-46px)] items-center justify-center rounded-md bg-slate-50 p-4 text-center text-[12px] font-bold text-slate-400">
       {text}
     </div>
   );

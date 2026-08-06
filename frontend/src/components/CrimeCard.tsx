@@ -27,11 +27,11 @@ export const CrimeCard = memo(function CrimeCard({
         <button
           type="button"
           onClick={() => onOpen(article)}
-          className="group grid h-[280px] w-full grid-rows-[58%_42%] gap-3 text-left"
+          className="group grid h-[calc(100%-46px)] w-full grid-rows-[58%_42%] gap-3 text-left"
         >
           <ImageBox article={article} />
           <div className="flex min-w-0 items-start overflow-hidden">
-            <h3 className="font-news-headline line-clamp-4 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+            <h3 className="font-news-headline line-clamp-3 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
               {article.title}
             </h3>
           </div>

@@ -27,11 +27,11 @@ export const MoviesCard = memo(function MoviesCard({
         <button
           type="button"
           onClick={() => onOpen(article)}
-          className="group grid h-[218px] w-full grid-cols-[42%_1fr] gap-5 border-t border-slate-100 py-4 text-left"
+          className="group grid h-[calc(100%-46px)] w-full grid-cols-[42%_1fr] gap-5 border-t border-slate-100 py-4 text-left"
         >
           <ImageBox article={article} />
           <div className="flex min-w-0 items-center">
-            <h3 className="font-news-headline line-clamp-5 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+            <h3 className="font-news-headline line-clamp-4 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
               {article.title}
             </h3>
           </div>

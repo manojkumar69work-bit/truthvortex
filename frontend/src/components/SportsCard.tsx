@@ -24,7 +24,7 @@ export const SportsCard = memo(function SportsCard({
       {loading ? (
         <SkeletonRows count={4} />
       ) : articles.length ? (
-        <div className="h-[calc(100%-42px)] divide-y divide-slate-100">
+        <div className="h-[calc(100%-46px)] divide-y divide-slate-100">
           {articles.map((article) => (
             <button
               key={article.id}
@@ -34,7 +34,7 @@ export const SportsCard = memo(function SportsCard({
             >
               <ImageBox article={article} />
               <div className="flex min-w-0 items-center">
-                <h3 className="font-news-headline line-clamp-4 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+                <h3 className="font-news-headline line-clamp-3 text-[21px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
                   {article.title}
                 </h3>
               </div>

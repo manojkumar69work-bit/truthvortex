@@ -24,7 +24,7 @@ export const BusinessCard = memo(function BusinessCard({
       {loading ? (
         <SkeletonRows count={3} />
       ) : articles.length ? (
-        <div className="grid h-[280px] grid-cols-3 gap-3">
+        <div className="grid h-[calc(100%-46px)] grid-cols-3 gap-3">
           {articles.map((article) => (
             <button
               key={article.id}
@@ -34,7 +34,7 @@ export const BusinessCard = memo(function BusinessCard({
             >
               <ImageBox article={article} />
               <div className="flex min-w-0 items-start overflow-hidden">
-                <h3 className="font-news-headline line-clamp-4 text-[20px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
+                <h3 className="font-news-headline line-clamp-3 text-[20px] leading-[1.22] tracking-[-0.02em] text-[#071225] transition group-hover:text-red-600">
                   {article.title}
                 </h3>
               </div>
