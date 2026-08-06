@@ -206,16 +206,16 @@ export default function Home() {
 
         /* Noto Sans Telugu, not Ramabhadra: Ramabhadra ships weight 400 only,
            so font-weight:700 was synthetic bold — smeared conjuncts. */
-        /* Telugu marks sit above the Latin ascender (ీ ై ొ) and below the
-           descender (ు ృ), so at these tight line-heights the glyph overflows
-           the line box and overflow:hidden — needed by line-clamp/truncate —
-           shears it. Padding both edges gives the overflow room inside the
-           clipped padding box. */
+        /* Telugu marks sit above the Latin ascender (ీ ై ొ), so the first line
+           needs headroom or overflow:hidden shears it. padding-TOP only —
+           padding-bottom must never be added here: line-clamp hides the lines
+           past the limit by clipping at the padding box, so bottom padding
+           uncovers the top of the next line instead of protecting descenders.
+           Descenders are handled by line-height instead. */
         .font-news-headline,
         .font-news-summary {
           font-family: "Noto Sans Telugu", Gautami, sans-serif;
           padding-top: 0.2em;
-          padding-bottom: 0.14em;
         }
 
         .font-news-headline {

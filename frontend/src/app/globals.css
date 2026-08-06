@@ -2,6 +2,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap");
 @import "tailwindcss";
 
+/* One knob for the whole desktop dashboard's scale — same effect as browser
+   zoom-out, but baked in so it matches for everyone. No dividing by the zoom
+   factor: inside a zoomed subtree the engine already resolves dvh/% against
+   the zoomed coordinate space, so 100dvh here fills exactly one screen.
+   Dividing double-counts it and pushes the bottom of the grid off-screen. */
+.tv-desk {
+  --tv-zoom: 0.82;
+  zoom: var(--tv-zoom);
+  height: 100dvh;
+  width: 100%;
+}
+
+/* The desktop dashboard is a fixed single screen, so nothing should scroll.
+   Belt and braces: zoom + viewport units land a fraction off in some engines,
+   and a rounding overflow would otherwise show a scrollbar. Mobile is a
+   scrolling layout and is left alone. */
+@media (min-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
 /* ---------------------------------------------------------------------------
    PAPER THEME — newsprint, not glass.
    All colour lives in the vars below; .tv-dark just swaps them (ink-on-black

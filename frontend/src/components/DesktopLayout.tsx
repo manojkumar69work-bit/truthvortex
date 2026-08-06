@@ -39,7 +39,7 @@ export const DesktopLayout = memo(function DesktopLayout({
   onOpenSection: (category: Category) => void;
 }) {
   return (
-    <main className="hidden h-screen w-screen overflow-hidden bg-[#f8fafc] text-[#071225] lg:block">
+    <main className="tv-desk hidden overflow-hidden bg-[#f8fafc] text-[#071225] lg:block">
       <div className="flex h-full w-full px-6 py-3">
         <section className="flex min-w-0 flex-1 flex-col">
           <Header
