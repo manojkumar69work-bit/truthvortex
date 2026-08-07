@@ -1,10 +1,65 @@
 # TruthVortex
 
-A TV-style news aggregator: **FastAPI + PostgreSQL** backend with a
-**multi-provider AI summarization** pipeline and a **Next.js 15 + React 19 +
-Tailwind v4** frontend. Articles are fetched from curated RSS feeds, summarized
-into **5–8 line Telugu** summaries, and displayed on a fixed single-screen
-desktop dashboard and a scrollable mobile layout.
+**Telugu news, summarized by AI, refreshed every 30 minutes.**
+
+Most Telugu news sites are ad-heavy walls of text. TruthVortex pulls ~30 RSS sources across 5 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
+
+**🔗 [truthvortex-sigma.vercel.app](https://truthvortex-sigma.vercel.app)** · FastAPI + Postgres + Next.js 15 · live
+
+<!-- TODO: add a screenshot here — the TV-style dashboard is the whole pitch and
+     a reader can't see it from prose. ![TruthVortex dashboard](docs/screenshot.png) -->
+
+---
+
+## The hard part: free LLM tiers are unreliable, and the feed can't stop
+
+A news feed that stalls is a dead product. But every free LLM tier rate-limits, and providers go down. So summarization runs through a **fallback chain** — if a provider returns a rate-limit or auth error, the next one takes over mid-run:
+
+```
+OpenRouter (primary) → OpenRouter2 (key rotation) → NVIDIA → Groq
+```
+
+An article is only stored with `"Not available"` if *all four* are exhausted. Summaries are generated **directly in Telugu** by the model — no translation hop, so no round-trip degradation.
+
+Three more things this had to survive:
+
+**A connection-pool race.** The background scraper and the API server competed for Postgres connections; under concurrent scrapes the pool would deadlock. Fixed by bounding concurrency (`MAX_CONCURRENT_SOURCES`, 5 on Render / 1 local) and correcting pool lifecycle.
+
+**Free-tier storage limits.** Articles older than `ARTICLE_RETENTION_DAYS` (2) are pruned every cycle, and feed entries already that old are skipped rather than fetched. Storage stays flat instead of growing without bound.
+
+**Duplicate stories.** ~30 sources cover the same events. Fuzzy deduplication catches near-identical stories that exact-match wouldn't.
+
+Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, strict CORS, and a React error boundary so one bad article can't blank the page.
+
+---
+
+## Architecture
+
+```
+~30 RSS feeds                Background scraper (every 30 min)
+      │                              │
+      └──────────────────────────────┤ fuzzy dedupe
+                                     │ AI summarize (4-provider fallback)
+                                     │ prune > 2 days old
+                                     ▼
+                              Postgres (Render)
+                                     │
+                        FastAPI  GET /news, /news/{cat}, /search
+                                     │
+                        Next.js 15 frontend (Vercel) — polls every 60s
+```
+
+| Path | What's in it |
+|---|---|
+| [`backend/scraper.py`](backend/scraper.py) | Feed ingestion, dedupe, the provider fallback chain |
+| [`backend/main.py`](backend/main.py) | API, rate limiting, security headers |
+| [`backend/source_policy.py`](backend/source_policy.py) | Per-source rules and image-copyright policy |
+| [`backend/db.py`](backend/db.py) | Pool management and retention pruning |
+
+---
+
+<details>
+<summary><b>Full setup, environment variables, and API reference</b></summary>
 
 ```
 TruthVortex/
@@ -152,3 +207,9 @@ cd backend && .venv/bin/python check_feeds.py
 3. **Never put secrets in `NEXT_PUBLIC_*`** — those are exposed to the browser.
 4. **Lock down CORS.** Set `CORS_ALLOW_ORIGINS` to your real frontend origin(s);
    never use `*` in production.
+
+</details>
+
+---
+
+<sub>Built by [Manoj Kumar Ethini](https://github.com/manojkumar69work-bit) · summaries are AI-generated; article text and links belong to their original publishers</sub>
