@@ -23,14 +23,26 @@ import requests
 import feedparser
 
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from rapidfuzz import fuzz
 from dotenv import load_dotenv
 from openai import OpenAI
 
 import categories as cats
-from source_policy import is_blocked_source
+import fetcher
+from source_policy import has_image_risk, is_blocked_source
 from db import get_cursor
+from webutil import (
+    clean_html_text,
+    clean_image_url,
+    fix_mojibake_text,
+    is_data_or_tiny_uri,
+    is_tiny_image,
+    normalize_url,
+    pick_srcset_largest,
+    set_response_encoding,
+    srcset_max_width,
+)
 
 
 # =========================
@@ -547,38 +559,10 @@ def _entry_published_dt(entry) -> datetime | None:
 # =========================
 # HELPERS
 # =========================
-def fix_mojibake_text(text: str) -> str:
-    if not text:
-        return ""
-
-    text = str(text)
-    mojibake_markers = ["à°", "à±", "à²", "à³", "â€", "Ã", "Â"]
-
-    if any(marker in text for marker in mojibake_markers):
-        for enc in ["latin1", "cp1252"]:
-            try:
-                fixed = text.encode(enc, errors="ignore").decode(
-                    "utf-8",
-                    errors="ignore",
-                )
-                if fixed and fixed != text and re.search(r"[\u0C00-\u0C7F]", fixed):
-                    return fixed.strip()
-            except Exception:
-                pass
-
-    return text.strip()
-
-
-def clean_html_text(text: str) -> str:
-    if not text:
-        return ""
-
-    text = html.unescape(str(text))
-    text = fix_mojibake_text(text)
-    text = BeautifulSoup(text, "html.parser").get_text(" ", strip=True)
-    text = fix_mojibake_text(text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
+# fix_mojibake_text / clean_html_text / normalize_url / is_probably_logo_image /
+# clean_image_url / set_response_encoding now live in webutil.py and are imported
+# at the top of this module. They were duplicated here; webutil is the single copy
+# so the scraper and the audit scripts cannot drift apart.
 
 
 def clean_ai_text_preserve_lines(text: str) -> str:
@@ -660,19 +644,6 @@ def is_duplicate_title(title: str, existing_titles: set, threshold: int = 85) ->
     return False
 
 
-def normalize_url(url: str, base_url: str) -> str:
-    if not url:
-        return ""
-
-    url = url.strip()
-
-    if url.startswith("//"):
-        parsed_base = urlparse(base_url)
-        return f"{parsed_base.scheme}:{url}"
-
-    return urljoin(base_url, url)
-
-
 def is_valid_article_link(link: str, base_domain: str) -> bool:
     if not link:
         return False
@@ -701,43 +672,6 @@ def is_valid_article_link(link: str, base_domain: str) -> bool:
     return True
 
 
-def is_probably_logo_image(image_url: str) -> bool:
-    if not image_url:
-        return True
-
-    lower = image_url.lower()
-
-    # SVGs are effectively always logos/icons in a news-photo context.
-    if lower.split("?", 1)[0].endswith(".svg"):
-        return True
-
-    # Match only against the filename (last path segment), NOT the whole URL,
-    # so a CDN directory like ".../default/..." or ".../icon/..." doesn't cause
-    # a legitimate article photo to be discarded.
-    path = urlparse(lower).path
-    fname = path.rsplit("/", 1)[-1] or path
-
-    logo_markers = [
-        "logo", "watermark", "favicon", "sprite", "placeholder",
-        "transparent", "blank", "1x1", "no-image", "noimage", "dummy",
-        "avatar", "-icon", "icon-", "_icon",
-    ]
-
-    return any(marker in fname for marker in logo_markers)
-
-
-def clean_image_url(image_url: str) -> str:
-    if not image_url:
-        return ""
-
-    image_url = image_url.strip()
-
-    if is_probably_logo_image(image_url):
-        return ""
-
-    return image_url
-
-
 def is_bad_placeholder_summary(text: str) -> bool:
     if not text:
         return False
@@ -760,19 +694,12 @@ def is_bad_placeholder_summary(text: str) -> bool:
     return any(phrase in lowered for phrase in bad_phrases)
 
 
-def set_response_encoding(response):
-    try:
-        response.encoding = response.apparent_encoding or "utf-8"
-    except Exception:
-        response.encoding = "utf-8"
-
-
 # =========================
 # RSS SCRAPING
 # =========================
 def fetch_feed(feed_url: str):
     try:
-        response = requests.get(
+        response = fetcher.get(
             feed_url,
             headers=HEADERS,
             timeout=REQUEST_TIMEOUT,
@@ -793,33 +720,48 @@ def fetch_feed(feed_url: str):
     return None
 
 
+def _usable_image(url: str, *, width=None, height=None) -> str:
+    """Shared gate for every image candidate: '' when it is not a usable photo.
+
+    Rejects inline data:/1x1-tracking-pixel URIs, logo/icon filenames, and
+    images whose *declared* dimensions are below the photo threshold. Unknown
+    dimensions are never treated as small — see webutil.is_tiny_image.
+    """
+    candidate = (url or "").strip()
+
+    if not candidate or is_data_or_tiny_uri(candidate):
+        return ""
+
+    if is_tiny_image(width, height):
+        return ""
+
+    return clean_image_url(candidate)
+
+
 def extract_image_from_entry(entry) -> str:
     try:
-        if hasattr(entry, "media_content") and entry.media_content:
-            url = entry.media_content[0].get("url", "").strip()
-            if url:
-                return clean_image_url(url)
+        for attr in ("media_content", "media_thumbnail"):
+            media = getattr(entry, attr, None) or []
 
-        if hasattr(entry, "media_thumbnail") and entry.media_thumbnail:
-            url = entry.media_thumbnail[0].get("url", "").strip()
-            if url:
-                return clean_image_url(url)
+            for item in media:
+                # Media RSS carries width/height, so a publisher's 100x100
+                # thumbnail can be rejected before we ever save it.
+                found = _usable_image(
+                    item.get("url", ""),
+                    width=item.get("width"),
+                    height=item.get("height"),
+                )
+                if found:
+                    return found
 
-        if hasattr(entry, "links"):
-            for link in entry.links:
-                href = link.get("href", "").strip()
-                media_type = link.get("type", "")
+        for collection in (getattr(entry, "links", None), getattr(entry, "enclosures", None)):
+            for item in collection or []:
+                if not (item.get("type", "") or "").startswith("image/"):
+                    continue
 
-                if href and media_type.startswith("image/"):
-                    return clean_image_url(href)
-
-        if hasattr(entry, "enclosures") and entry.enclosures:
-            for enclosure in entry.enclosures:
-                href = enclosure.get("href", "").strip()
-                media_type = enclosure.get("type", "")
-
-                if href and media_type.startswith("image/"):
-                    return clean_image_url(href)
+                found = _usable_image(item.get("href", ""))
+                if found:
+                    return found
 
         possible_html = ""
 
@@ -831,13 +773,52 @@ def extract_image_from_entry(entry) -> str:
 
         if possible_html:
             soup = BeautifulSoup(possible_html, "html.parser")
-            img = soup.find("img")
 
-            if img and img.get("src"):
-                return clean_image_url(img["src"].strip())
+            for img in soup.find_all("img"):
+                found = _image_from_img_tag(img, base_url="")
+                if found:
+                    return found
 
     except Exception:
         pass
+
+    return ""
+
+
+def _image_from_img_tag(img, base_url: str) -> str:
+    """Best URL from one <img>, preferring srcset's largest candidate.
+
+    Lazy-loading publishers put a 1x1 data: URI in ``src`` and the real photo in
+    ``srcset``/``data-src``, so reading ``src`` alone yields a tracking pixel.
+    """
+    srcset = img.get("srcset") or img.get("data-srcset") or ""
+
+    if srcset:
+        largest = pick_srcset_largest(srcset)
+        declared_width = srcset_max_width(srcset)
+
+        # A srcset that declares its widths tells us the size directly; pass it
+        # as the width so a thumbnail-only srcset is rejected here.
+        found = _usable_image(
+            normalize_url(largest, base_url) if base_url else largest,
+            width=declared_width or None,
+        )
+        if found:
+            return found
+
+    for attr in ("src", "data-src", "data-original", "data-lazy-src"):
+        raw = (img.get(attr) or "").strip()
+
+        if not raw:
+            continue
+
+        found = _usable_image(
+            normalize_url(raw, base_url) if base_url else raw,
+            width=img.get("width"),
+            height=img.get("height"),
+        )
+        if found:
+            return found
 
     return ""
 
@@ -913,7 +894,7 @@ def extract_image_from_page(url: str) -> str:
         return ""
 
     try:
-        response = requests.get(
+        response = fetcher.get(
             url,
             headers=HEADERS,
             timeout=PAGE_IMAGE_TIMEOUT,
@@ -926,20 +907,37 @@ def extract_image_from_page(url: str) -> str:
 
         og = soup.find("meta", property="og:image")
         if og and og.get("content"):
-            return clean_image_url(normalize_url(og["content"], url))
+            # og:image:width/height are advisory but, when present, let us skip a
+            # site that advertises its 200px social thumbnail as the hero image.
+            og_width = soup.find("meta", property="og:image:width")
+            og_height = soup.find("meta", property="og:image:height")
+
+            found = _usable_image(
+                normalize_url(og["content"], url),
+                width=og_width.get("content") if og_width else None,
+                height=og_height.get("content") if og_height else None,
+            )
+            if found:
+                return found
 
         twitter = soup.find("meta", attrs={"name": "twitter:image"})
         if twitter and twitter.get("content"):
-            return clean_image_url(normalize_url(twitter["content"], url))
+            found = _usable_image(normalize_url(twitter["content"], url))
+            if found:
+                return found
 
         # Strip site chrome so the first <img> we grab isn't the masthead logo
         # or a nav icon; prefer an image inside the article body.
         for tag in soup(["nav", "header", "footer", "aside", "svg"]):
             tag.decompose()
         scope = soup.find("article") or soup
-        img = scope.find("img")
-        if img and img.get("src"):
-            return clean_image_url(normalize_url(img["src"], url))
+
+        # Walk candidates instead of taking only the first <img>: the first one
+        # is often a lazy-load placeholder or an author avatar.
+        for img in scope.find_all("img", limit=12):
+            found = _image_from_img_tag(img, base_url=url)
+            if found:
+                return found
 
     except requests.exceptions.Timeout:
         log("    [Image Page Timeout]")
@@ -951,7 +949,7 @@ def extract_image_from_page(url: str) -> str:
 
 def extract_full_article_text(url: str) -> str:
     try:
-        response = requests.get(
+        response = fetcher.get(
             url,
             headers=HEADERS,
             timeout=ARTICLE_TEXT_TIMEOUT,
@@ -1065,7 +1063,7 @@ def scrape_page_source(source_config: dict) -> list[dict]:
     log(f"  URL: {page_url}")
 
     try:
-        response = requests.get(
+        response = fetcher.get(
             page_url,
             headers=HEADERS,
             timeout=REQUEST_TIMEOUT,
@@ -1712,10 +1710,17 @@ def _process_article(
         log(f"    Skipped: older than {ARTICLE_RETENTION_DAYS} day(s)")
         return None
 
-    if is_blocked_source(source):
-        total_seen["ignored"] += 1
-        log("    Skipped: blocked source/image copyright policy")
-        return None
+    # AXIS 1 of source_policy: this publisher's PHOTOS are copyright-risky, so
+    # the image is dropped and the article text is kept. This used to drop the
+    # whole article, which silently made Telugu text sources unusable — see the
+    # module docstring in source_policy.py. AXIS 2 (an outright ingest ban) is
+    # applied to SOURCES at import time via is_blocked_source().
+    image_risk = has_image_risk(source)
+
+    if image_risk and image:
+        total_seen["image_risk"] += 1
+        log("    Image dropped: publisher photos are copyright-risky.")
+        image = ""
 
     log(f"    Title: {title[:100]}")
 
@@ -1756,9 +1761,10 @@ def _process_article(
         log("    Full article is placeholder text. Falling back to RSS description.")
         full_article_text = ""
 
-    # All sources are copyright-safe — use images directly.
-    # Fall back to the TruthVortex placeholder only if no image was found at all.
-    if not image:
+    # Publishers not flagged for image risk keep their real photo. For flagged
+    # ones we must not go looking on the article page either — that is where the
+    # watermarked hero image lives — so the placeholder is the only option.
+    if not image and not image_risk:
         log("    Image not found in RSS. Checking article page...")
         image = clean_image_url(extract_image_from_page(link))
     if not image:
@@ -1888,6 +1894,7 @@ def run_scraper():
         "dup": 0,
         "too_old": 0,
         "ignored": 0,
+        "image_risk": 0,
         "placeholder": 0,
         "short_article": 0,
         "ai_failed": 0,
@@ -1976,12 +1983,14 @@ def run_scraper():
     log(f"Duplicates skipped: {counters['dup']}")
     log(f"Older than retention window: {counters['too_old']}")
     log(f"Irrelevant ignored: {counters['ignored']}")
+    log(f"Images dropped (copyright risk): {counters['image_risk']}")
     log(f"Placeholder skipped: {counters['placeholder']}")
     log(f"Short full article (fell back to RSS): {counters['short_article']}")
     log(f"AI failures (fell back to RSS): {counters['ai_failed']}")
     log(f"AI summaries generated: {counters['ai_ok']}")
     log(f"Total new articles saved: {counters['saved']}")
     log(f"Saved with RSS-fallback summary: {counters['saved_fallback']}")
+    log(fetcher.stats_line())
     log(f"Total time: {elapsed:.1f} seconds")
     log("=" * 60)
 
