@@ -42,6 +42,35 @@ TINY_URI_B64_PREFIXES = [
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB",         # 1x1 PNG
 ]
 
+# Analytics/ad beacons served as <img>. These carry no filename and no declared
+# dimensions, so neither the logo filter nor the size gate catches them: matched
+# on host instead. Observed live — Deccan Chronicle's homepage yields
+# sb.scorecardresearch.com/p?c1=2&... as its first <img> when the page has no
+# og:image to win first.
+TRACKER_DOMAINS = frozenset({
+    "scorecardresearch.com",
+    "google-analytics.com",
+    "googletagmanager.com",
+    "googlesyndication.com",
+    "doubleclick.net",
+    "quantserve.com",
+    "quantcount.com",
+    "chartbeat.com",
+    "chartbeat.net",
+    "amazon-adsystem.com",
+    "adsrvr.org",
+    "criteo.com",
+    "outbrain.com",
+    "taboola.com",
+    "moatads.com",
+    "gemius.pl",
+    "hotjar.com",
+    "segment.io",
+    "mixpanel.com",
+    "branch.io",
+    "bounceexchange.com",
+})
+
 # "1200w" / "2x" / "1.5x" srcset descriptors.
 _SRCSET_DESCRIPTOR_RE = re.compile(r"^([0-9]+(?:\.[0-9]+)?)([wxh])$", re.IGNORECASE)
 
@@ -123,13 +152,40 @@ def is_probably_logo_image(image_url: str) -> bool:
     return any(marker in fname for marker in LOGO_MARKERS)
 
 
+def is_tracker_image(image_url: str) -> bool:
+    """True when the URL points at a known analytics/ad beacon host.
+
+    Matched on registrable-ish suffix so ``sb.scorecardresearch.com`` and
+    ``b.scorecardresearch.com`` are both caught by one entry.
+    """
+    if not image_url:
+        return False
+
+    try:
+        host = urlparse(str(image_url).strip().lower()).netloc
+
+        # Drop credentials and port so "host:443" still matches "host".
+        host = host.rsplit("@", 1)[-1].split(":", 1)[0]
+
+        if not host:
+            return False
+
+        return any(
+            host == domain or host.endswith("." + domain)
+            for domain in TRACKER_DOMAINS
+        )
+    except Exception:
+        logger.debug("is_tracker_image failed", exc_info=True)
+        return False
+
+
 def clean_image_url(image_url: str) -> str:
     if not image_url:
         return ""
 
     image_url = image_url.strip()
 
-    if is_probably_logo_image(image_url):
+    if is_probably_logo_image(image_url) or is_tracker_image(image_url):
         return ""
 
     return image_url

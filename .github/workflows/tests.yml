@@ -1,0 +1,33 @@
+name: unit-tests
+
+on:
+  push:
+    branches:
+      - main
+      - scraper-upgrade
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  webutil:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches backend/Dockerfile (python:3.13-slim).
+          python-version: "3.13"
+
+      # test_webutil.py uses plain asserts and imports only webutil, which needs
+      # beautifulsoup4 and nothing else. No DB, no env, no API keys — same
+      # reasoning as check_feeds.py. Keep it that way so these tests stay
+      # runnable on any checkout.
+      - name: Install test deps
+        run: pip install beautifulsoup4==4.12.3
+
+      - name: Run webutil unit tests
+        working-directory: backend
+        run: python test_webutil.py
