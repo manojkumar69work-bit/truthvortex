@@ -40,6 +40,13 @@ services:
         sync: false
       - key: CORS_ALLOW_ORIGINS
         sync: false   # e.g. https://your-app.vercel.app
+      # The cron service below is the single owner of scraping. Without this the
+      # API's in-process thread (main.py:_start_background_scraper) ALSO scrapes
+      # every 30 min, so both ran concurrently — duplicate LLM spend and doubled
+      # rate-limit pressure. The cron is the right owner because a free-plan web
+      # service spins down when idle, which silently stops the thread's schedule.
+      - key: DISABLE_BACKGROUND_SCRAPER
+        value: "true"
 
   # ─── Scraper (runs every 30 min) ─────────────────────────────────────────
   - type: cron
@@ -72,6 +79,19 @@ services:
         value: "false"
       - key: MAX_CONCURRENT_SOURCES
         value: "5"
+      - key: MAX_ENTRIES_PER_SOURCE
+        value: "6"
+      # Minimum gap between two requests to the same publisher host. Needed now
+      # that feeds are fetched from a thread pool — without it one publisher can
+      # be hit several ways at once.
+      - key: PER_DOMAIN_DELAY_SECONDS
+        value: "0.5"
+      # Retry a bot-walled fetch (403/429/503 from Cloudflare/Akamai) once with a
+      # real browser TLS fingerprint. ESPNcricinfo's Akamai rejects the plain
+      # python-requests fingerprint regardless of headers, so without this its
+      # article pages always 403 and the AI only ever sees the RSS blurb.
+      - key: ENABLE_IMPERSONATE_FALLBACK
+        value: "true"
       # Every cycle deletes articles older than this many days.
       - key: ARTICLE_RETENTION_DAYS
         value: "2"

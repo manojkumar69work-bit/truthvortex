@@ -1,0 +1,49 @@
+name: feed-liveness
+
+on:
+  schedule:
+    # Daily, deliberately off the hour: GitHub's shared cron pool is heavily
+    # oversubscribed at :00 and jobs get queued for many minutes.
+    - cron: "17 5 * * *"
+  pull_request:
+    paths:
+      - "backend/scraper.py"
+      - "backend/check_feeds.py"
+      - ".github/workflows/feeds.yml"
+  workflow_dispatch:
+
+jobs:
+  check-feeds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Publisher-side flakiness must not redden an unrelated PR, so the
+    # pull_request path is advisory only: the job still runs and its log is
+    # still readable, but a failure does not block the merge. The scheduled and
+    # workflow_dispatch runs stay hard-failing — that is where a genuinely dead
+    # feed has to be caught.
+    continue-on-error: ${{ github.event_name == 'pull_request' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches backend/Dockerfile (python:3.13-slim).
+          python-version: "3.13"
+
+      # check_feeds.py reads SOURCES out of scraper.py with ast.literal_eval,
+      # so it never imports scraper.py and needs no DB, no env, and no secrets.
+      # Do not add any here — needing none is the point of that design.
+      - name: Install feed-check deps
+        run: pip install requests feedparser
+
+      # Expect noise from The Hans India: Cloudflare 403s GitHub-hosted runner
+      # IP ranges far more aggressively than it does Render's egress, so those
+      # feeds can fail here while being perfectly alive in production. Read the
+      # log before believing a Hans India failure. Do NOT lower
+      # MIN_PER_CATEGORY (3) to paper over it — that would hide real outages in
+      # every other category.
+      - name: Check feed liveness
+        working-directory: backend
+        run: python check_feeds.py
