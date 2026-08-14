@@ -23,7 +23,7 @@ from slowapi.errors import RateLimitExceeded
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
 from db import get_cursor
-from source_policy import is_blocked_source
+from source_policy import has_image_risk, is_blocked_source
 
 load_dotenv()
 
@@ -195,6 +195,14 @@ def ensure_schema() -> None:
 # ─── Row → JSON ────────────────────────────────────────────────
 def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
     category = resolve(stored=row.get("category"), source=row.get("source"))
+
+    # The scraper already drops copyright-risky images at ingest, but rows
+    # written before that gate existed can still carry one, so re-check on the
+    # way out. Blanking the field makes the client show its own placeholder.
+    image = row["image"] or ""
+    if image and has_image_risk(row.get("source")):
+        image = ""
+
     return {
         "id": row["id"],
         "source": row["source"],
@@ -202,7 +210,7 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
         "title_original": row.get("title_original") or "",
         "link": row["link"],
         "summary": row["summary"] or "",
-        "image": row["image"] or "",
+        "image": image,
         "published": row["published"].isoformat() if row.get("published") else None,
         "category": category,
         "ai_summary": row.get("ai_summary") or "",

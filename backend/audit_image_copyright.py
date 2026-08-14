@@ -34,7 +34,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import scraper  # noqa: E402
 
-# Re-run the SOURCES list as defined in scraper.py (post is_blocked_source).
+# Re-run the SOURCES list as defined in scraper.py (post has_image_risk).
 ALL_SOURCES_RAW = [
     {"name": n, "url": u, "category": c, "type": t}
     for (n, u, c, t) in [
@@ -238,7 +238,7 @@ def audit_channel(src: dict) -> dict:
     name = src["name"]
     url = src["url"]
     category = src.get("category", "?")
-    blocked = scraper.is_blocked_source(name)
+    blocked = scraper.has_image_risk(name)
 
     entries, err = fetch_feed_entries(url)
     if err or not entries:
@@ -308,7 +308,7 @@ def main():
             r = audit_channel(s)
         except Exception as e:
             r = {"name": s["name"], "category": s.get("category", "?"), "url": s["url"],
-                 "blocked_by_policy": scraper.is_blocked_source(s["name"]),
+                 "blocked_by_policy": scraper.has_image_risk(s["name"]),
                  "status": "ERROR", "total": 0, "clean": 0, "logo_url": 0,
                  "publisher_stamp": 0, "empty": 0, "sample_images": [],
                  "error": repr(e)}
