@@ -42,6 +42,14 @@ The **frontend stays on Vercel** — you only repoint it at the new Railway API 
 3. **Variables** tab → add the same AI + DB variables as the API (§4), plus:
    - `SAFE_IMAGES_ONLY` = `false`
    - `MAX_CONCURRENT_SOURCES` = `5`
+   - `MAX_ENTRIES_PER_SOURCE` = `6`
+   - `PER_DOMAIN_DELAY_SECONDS` = `0.5` — minimum gap between two hits on the
+     same publisher host. Feeds are fetched from a thread pool and several
+     sources share hosts, so without this a publisher starts 429ing.
+   - `ENABLE_IMPERSONATE_FALLBACK` = `true` — retries a 403/429/503 once with a
+     real Chrome TLS fingerprint. ESPNcricinfo's Akamai blocks on fingerprint,
+     not headers, so without this its article pages always 403 and the AI only
+     ever sees the RSS blurb.
 
 > Tip: use Railway's **shared variables** (project level) so `DATABASE_URL` and the
 > API keys are defined once and referenced by both services.
@@ -59,6 +67,11 @@ Set these on **both** the API and scraper services (or as shared/project variabl
 | `OPENROUTER_MODEL` | `google/gemma-4-26b-a4b-it:free` |
 | `GROQ_API_KEY` | *(your Groq key — fallback)* |
 | `CORS_ALLOW_ORIGINS` | *(your Vercel URL, e.g. `https://your-app.vercel.app`)* — **API only** |
+| `DISABLE_BACKGROUND_SCRAPER` | `true` — **API only** |
+
+`DISABLE_BACKGROUND_SCRAPER` is not optional once the cron service in §3 exists:
+without it the API scrapes on its own 30-minute thread as well, so both services
+scrape concurrently — duplicate LLM spend and doubled rate-limit pressure.
 
 `GEMINI_API_KEY` / `NVIDIA_API_KEY` are optional; the app skips absent keys.
 The provider fallback order is: **openrouter → openrouter2 → groq → nvidia → gemini**.

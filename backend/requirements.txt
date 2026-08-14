@@ -13,8 +13,9 @@ beautifulsoup4==4.12.3
 # Failure-triggered fallback only (see fetcher.py). Impersonates a real Chrome
 # TLS/HTTP2 fingerprint. ESPNcricinfo's Akamai returns 403 to python-requests and
 # 200 to curl with byte-identical headers, so this is a fingerprint block that no
-# amount of header work fixes. Ships a manylinux abi3 wheel with libcurl-impersonate
-# bundled — no apt-get needed on python:3.13-slim. Would NOT work on Alpine/musl.
+# amount of header work fixes. Installs on python:3.13-slim off the cp310-abi3
+# manylinux_2_17_x86_64 wheel (abi3 covers 3.13; slim is glibc 2.36), so no apt-get
+# and no build toolchain. Pulls in cffi>=2.0.0 + certifi, both wheeled for cp313.
 curl_cffi==0.16.0
 
 # ─── AI / LLM ──────────────────────────────────────────────────
