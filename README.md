@@ -185,8 +185,9 @@ cd backend && .venv/bin/python check_feeds.py
   touch swipe) and Share button (Web Share API + clipboard fallback)
 - **Auto-rotating sections** — Breaking, Business, Sports, Crime, Movies
 - **Truncation-safe** summaries — retry chain ensures complete output
-- **Copyright-safe images** — placeholder by default; opt-in with
-  `SAFE_IMAGES_ONLY=false`
+- **Copyright-safe images** — sources are hand-curated to be logo- and
+  watermark-free, so the real source photo is kept by default and vetted through a
+  logo/junk-URL filter; `SAFE_IMAGES_ONLY=true` forces the placeholder instead
 - Loading skeletons, error and empty states, branded 404, favicon, OG metadata
 - Per-IP rate limiting, security headers, parameterized SQL, strict CORS
 
