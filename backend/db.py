@@ -24,13 +24,31 @@ from psycopg2.pool import ThreadedConnectionPool
 _POOL: ThreadedConnectionPool | None = None
 _POOL_LOCK = threading.Lock()
 
+# Fail fast rather than hang when the database host stops answering. A managed
+# instance that is suspended or deleted blackholes the connection instead of
+# refusing it, so without this psycopg2 waits indefinitely and every request —
+# including /health, whose whole job is to report the outage — hangs with it.
+_CONNECT_TIMEOUT = int(os.getenv("DB_CONNECT_TIMEOUT", "5"))
+
+# Server-side guards so a runaway query doesn't pin a pool slot.
+_STATEMENT_GUARDS = "-c statement_timeout=15000 -c lock_timeout=7000"
+
 
 def _build_connect_kwargs() -> dict:
     """Return kwargs for ``psycopg2.connect`` from env."""
     database_url = os.getenv("DATABASE_URL")
     if database_url:
-        # When using DATABASE_URL, psycopg2 handles individual fields itself.
-        return {"dsn": database_url}
+        # psycopg2 hands the URL's own fields through as-is, but it applies no
+        # timeouts of its own — and this is the branch every deployment takes.
+        # Add them here or production runs with none. Anything already spelled
+        # out in DATABASE_URL wins: kwargs override the DSN in make_dsn(), so
+        # only supply what the URL didn't.
+        kwargs: dict = {"dsn": database_url}
+        if "connect_timeout" not in database_url:
+            kwargs["connect_timeout"] = _CONNECT_TIMEOUT
+        if "options" not in database_url:
+            kwargs["options"] = _STATEMENT_GUARDS
+        return kwargs
 
     user = os.getenv("DB_USER") or os.getenv("USER") or os.getenv("USERNAME")
     if not user:
@@ -44,9 +62,8 @@ def _build_connect_kwargs() -> dict:
         "password": os.getenv("DB_PASSWORD"),
         "host": os.getenv("DB_HOST", "localhost"),
         "port": os.getenv("DB_PORT", "5432"),
-        "connect_timeout": 5,
-        # Server-side guards so a runaway query doesn't pin a pool slot.
-        "options": "-c statement_timeout=15000 -c lock_timeout=7000",
+        "connect_timeout": _CONNECT_TIMEOUT,
+        "options": _STATEMENT_GUARDS,
     }
 
 
