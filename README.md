@@ -2,7 +2,7 @@
 
 **Telugu news, summarized by AI, refreshed every 30 minutes.**
 
-Most Telugu news sites are ad-heavy walls of text. TruthVortex pulls ~30 RSS sources across 5 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
+Most Telugu news sites are ad-heavy walls of text. TruthVortex pulls 18 RSS feeds across 5 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
 
 **🔗 [truthvortex-sigma.vercel.app](https://truthvortex-sigma.vercel.app)** · FastAPI + Postgres + Next.js 15 · live
 
@@ -27,7 +27,7 @@ Three more things this had to survive:
 
 **Free-tier storage limits.** Articles older than `ARTICLE_RETENTION_DAYS` (2) are pruned every cycle, and feed entries already that old are skipped rather than fetched. Storage stays flat instead of growing without bound.
 
-**Duplicate stories.** ~30 sources cover the same events. Fuzzy deduplication catches near-identical stories that exact-match wouldn't.
+**Duplicate stories.** The 18 feeds come from 7 publishers and overlap heavily on the same events. `rapidfuzz` title matching catches near-identical stories that exact-match wouldn't.
 
 Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, strict CORS, and a React error boundary so one bad article can't blank the page.
 
@@ -81,7 +81,7 @@ TruthVortex/
 
 ## How it works
 
-1. **Scrape** — RSS feeds are fetched from ~30 curated sources across 5 categories:
+1. **Scrape** — A cron service fetches 18 curated RSS feeds across 5 categories:
    Breaking, Business, Sports, Movies, Crime.
 2. **Summarize** — Each article's full text is sent through an AI pipeline that
    generates a 5–8 line Telugu summary directly.
