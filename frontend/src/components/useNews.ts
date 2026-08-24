@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { API_URL, REFRESH_MS } from "./constants";
 import { normalizeCategory, hasValidAiSummary } from "./utils";
 import type { Article, Category } from "./types";
@@ -10,6 +10,10 @@ export function useNews() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Guards against out-of-order responses: a slow first request must not
+  // overwrite the result of a later one that already came back.
+  const requestId = useRef(0);
+
   const fetchNews = useCallback(async () => {
     if (typeof document !== "undefined" && document.hidden) {
       // Nothing is in flight, so stop waiting on one. Returning without this
@@ -18,6 +22,9 @@ export function useNews() {
       setLoading(false);
       return;
     }
+
+    const id = ++requestId.current;
+
     try {
       setError("");
 
@@ -40,11 +47,17 @@ export function useNews() {
           })
         : [];
 
+      if (id !== requestId.current) return;
+
       setArticles(cleanArticles);
     } catch (err) {
+      if (id !== requestId.current) return;
+
       setError(err instanceof Error ? err.message : "Unable to fetch news");
     } finally {
-      setLoading(false);
+      if (id === requestId.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
