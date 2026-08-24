@@ -165,13 +165,20 @@ cd backend && .venv/bin/python check_feeds.py
 | `OPENROUTER_API_KEY_2` | No | Secondary key for rate-limit rotation |
 | `OPENROUTER_MODEL` | No | `google/gemma-4-26b-a4b-it:free` (default) |
 | `NVIDIA_API_KEY` | No | Fallback AI provider |
-| `GROQ_API_KEY` | No | Last-resort fallback |
-| `AI_PROVIDER` | No | `openrouter` (default) |
-| `CORS_ALLOW_ORIGINS` | No | Comma-separated origins |
-| `MAX_CONCURRENT_SOURCES` | No | `5` on Render, `1` local (default) |
-| `SCRAPE_API_TOKEN` | No | Bearer token for `/scrape` endpoint |
-| `SCRAPER_INTERVAL_MINUTES` | No | `30` (default) |
+| `GROQ_API_KEY` | No | Fallback AI provider |
+| `GEMINI_API_KEY` | No | Last-resort fallback; ignored unless it starts with `AIza` |
+| `AI_PROVIDER` | No | `openrouter` (default) — promotes one provider to the front of the chain |
+| `CORS_ALLOW_ORIGINS` | No | Comma-separated origins; defaults to `http://localhost:3000` |
+| `DISABLE_BACKGROUND_SCRAPER` | **Yes, on the API** | `true` — without it the API scrapes alongside the cron |
+| `MAX_CONCURRENT_SOURCES` | No | `1` (default), `5` in the deployed cron |
+| `MAX_ENTRIES_PER_SOURCE` | No | `6` (default) |
+| `PER_DOMAIN_DELAY_SECONDS` | No | `0` (default), `0.5` deployed — min gap between hits on one publisher |
+| `ENABLE_IMPERSONATE_FALLBACK` | No | Retry a bot-walled fetch once with a browser TLS fingerprint |
+| `SAFE_IMAGES_ONLY` | No | `false` (default) — `true` drops every source photo for the placeholder |
+| `SCRAPE_API_TOKEN` | Only to use `/scrape` | Bearer token for `/scrape`. Unset means the endpoint refuses every call with 503 |
+| `SCRAPER_INTERVAL_MINUTES` | No | `30` (default); only used by the in-process thread |
 | `ARTICLE_RETENTION_DAYS` | No | `2` (default); `0` keeps articles forever |
+| `DB_POOL_MAX` | No | `5` (default) |
 
 ### Frontend (`frontend/.env.local`)
 
