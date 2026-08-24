@@ -1901,7 +1901,6 @@ def run_scraper():
         "ai_failed": 0,
         "ai_ok": 0,
         "saved": 0,
-        "saved_fallback": 0,
     }
 
     # ── Phase 1: fetch all sources in parallel ─────────────────
@@ -1964,8 +1963,6 @@ def run_scraper():
                         existing_titles_set.add(article["title_original"])
                     saved_count += 1
                     counters["saved"] += 1
-                    if not article["ai_summary"]:
-                        counters["saved_fallback"] += 1
                     log(f"    ✓ Saved: {article['title'][:90]}")
                 else:
                     log("    Not saved: link already exists")
@@ -1987,10 +1984,9 @@ def run_scraper():
     log(f"Images dropped (copyright risk): {counters['image_risk']}")
     log(f"Placeholder skipped: {counters['placeholder']}")
     log(f"Short full article (fell back to RSS): {counters['short_article']}")
-    log(f"AI failures (fell back to RSS): {counters['ai_failed']}")
+    log(f"Dropped, no usable AI summary: {counters['ai_failed']}")
     log(f"AI summaries generated: {counters['ai_ok']}")
     log(f"Total new articles saved: {counters['saved']}")
-    log(f"Saved with RSS-fallback summary: {counters['saved_fallback']}")
     log(fetcher.stats_line())
     log(f"Total time: {elapsed:.1f} seconds")
     log("=" * 60)
