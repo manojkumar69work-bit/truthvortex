@@ -1632,7 +1632,8 @@ def insert_article(
     cur.execute(
         """
         INSERT INTO news (source, title, title_original, link, summary, ai_summary, image, category, published)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, COALESCE(%s, NOW()))
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s,
+                COALESCE(%s::timestamptz, NOW()) AT TIME ZONE 'UTC')
         ON CONFLICT (link) DO NOTHING;
         """,
         (
