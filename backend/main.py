@@ -26,7 +26,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
 from db import get_cursor
-from source_policy import has_image_risk, is_blocked_source
+from source_policy import BANNED_SOURCE_KEYWORDS, has_image_risk, is_blocked_source
 
 load_dotenv()
 
@@ -246,6 +246,12 @@ _SELECT = (
     "id, source, title, title_original, link, summary, image, published, category, ai_summary"
 )
 
+# _allowed_articles drops banned publishers *after* the query returns, so the
+# query has to over-fetch to still come back with `limit` rows. That only
+# matters when something is actually banned — with BANNED_SOURCE_KEYWORDS empty
+# nothing is ever dropped and a 5x over-fetch is 750 wasted rows per /news call.
+_OVERFETCH = 5 if BANNED_SOURCE_KEYWORDS else 1
+
 
 # ─── Routes ────────────────────────────────────────────────────
 @app.on_event("startup")
@@ -327,7 +333,7 @@ def get_news(request: Request, limit: int = Query(150, ge=1, le=500)) -> list[di
         cur.execute(
             f"SELECT {_SELECT} FROM news "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
-            (limit * 5,),
+            (limit * _OVERFETCH,),
         )
         rows = cur.fetchall()
     return _allowed_articles(rows, limit)
@@ -352,7 +358,7 @@ def get_news_by_category(
             f"SELECT {_SELECT} FROM news "
             "WHERE LOWER(category) = %s "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
-            (category, limit * 5),
+            (category, limit * _OVERFETCH),
         )
         rows = cur.fetchall()
     return _allowed_articles(rows, limit)
@@ -425,7 +431,7 @@ def search_news(
             "   OR ai_summary ILIKE %s "
             "   OR source ILIKE %s "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
-            (like_q, like_q, like_q, like_q, limit * 5),
+            (like_q, like_q, like_q, like_q, limit * _OVERFETCH),
         )
         rows = cur.fetchall()
     return _allowed_articles(rows, limit)
