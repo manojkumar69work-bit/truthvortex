@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import os
+import secrets
 import threading
 import time
 from typing import Any
@@ -345,16 +346,37 @@ def get_news_by_category(
 
 @app.post("/scrape")
 def trigger_scrape(request: Request) -> dict[str, Any]:
-    token = request.headers.get("authorization", "").removeprefix("Bearer ")
     expected = os.getenv("SCRAPE_API_TOKEN", "")
-    if expected and token != expected:
+
+    # An unset token must CLOSE this door, not open it. The previous check was
+    # `if expected and token != expected`, which skipped verification entirely
+    # when the var was missing — and it is missing in every deploy config in
+    # this repo. A scrape spends LLM credits and hits every publisher in
+    # SOURCES, so an unauthenticated caller could bill and rate-limit us at will.
+    if not expected:
+        logger.error(
+            "POST /scrape refused: SCRAPE_API_TOKEN is not set, so the endpoint "
+            "cannot authenticate callers."
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="Scrape endpoint disabled: SCRAPE_API_TOKEN is not configured.",
+        )
+
+    token = request.headers.get("authorization", "").removeprefix("Bearer ").strip()
+    # Compare as bytes: secrets.compare_digest() raises TypeError on str inputs
+    # that aren't ASCII-only, which would turn a non-ASCII token into a 500.
+    if not secrets.compare_digest(token.encode("utf-8"), expected.encode("utf-8")):
         raise HTTPException(status_code=403, detail="Forbidden")
+
     from scraper import run_scraper
+
     try:
         run_scraper()
         return {"status": "ok", "message": "Scrape completed"}
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("Manual scrape failed")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/search")
