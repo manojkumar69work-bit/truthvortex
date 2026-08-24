@@ -15,6 +15,7 @@ import os
 import secrets
 import threading
 import time
+from datetime import timezone
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
@@ -202,6 +203,13 @@ def ensure_schema() -> None:
 def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
     category = resolve(stored=row.get("category"), source=row.get("source"))
 
+    # `published` is stored as naive UTC. Serialising it without an offset
+    # makes every client guess, and JS `new Date("...T10:00:00")` guesses
+    # *local time* — so the same row reads hours off depending on the reader.
+    published = row.get("published")
+    if published is not None and published.tzinfo is None:
+        published = published.replace(tzinfo=timezone.utc)
+
     # The scraper already drops copyright-risky images at ingest, but rows
     # written before that gate existed can still carry one, so re-check on the
     # way out. Blanking the field makes the client show its own placeholder.
@@ -217,7 +225,7 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
         "link": row["link"],
         "summary": row["summary"] or "",
         "image": image,
-        "published": row["published"].isoformat() if row.get("published") else None,
+        "published": published.isoformat() if published else None,
         "category": category,
         "ai_summary": row.get("ai_summary") or "",
     }
