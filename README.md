@@ -213,8 +213,13 @@ cd backend && .venv/bin/python check_feeds.py
 | `GET /health` | Readiness probe (200=ok, 503=DB down) |
 | `GET /news?limit=N` | Latest N articles (default 150) |
 | `GET /news/{category}` | Articles in a single category |
-| `GET /search?q=...` | ILIKE search across title/summary/source |
+| `GET /search?q=...` | ILIKE search across title/summary/ai_summary/source |
 | `POST /scrape` | Trigger scraper (auth: `Bearer <SCRAPE_API_TOKEN>`) |
+
+All routes are per-IP rate limited: 60/min on `/news` and `/news/{category}`,
+30/min on `/search`, 5/min on `/scrape`, and a 120/min default on anything else.
+`/health` is exempt so a platform health check can't be throttled. `/scrape` also
+takes a process-wide lock and answers 409 if a scrape is already running.
 
 ## ⚠️ Before you deploy (security)
 
@@ -225,6 +230,9 @@ cd backend && .venv/bin/python check_feeds.py
 3. **Never put secrets in `NEXT_PUBLIC_*`** — those are exposed to the browser.
 4. **Lock down CORS.** Set `CORS_ALLOW_ORIGINS` to your real frontend origin(s);
    never use `*` in production.
+5. **Set `SCRAPE_API_TOKEN` if you want `/scrape`.** With no token configured the
+   endpoint refuses every request (503) rather than running unauthenticated — it
+   spends LLM credits and hits every publisher, so it fails closed by design.
 
 </details>
 
