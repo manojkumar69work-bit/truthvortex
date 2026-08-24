@@ -96,15 +96,34 @@ export function useNews() {
     return result;
   }, [articles]);
 
-  const breakingArticles = grouped.breaking;
-  const businessArticles = grouped.business;
-  const sportsArticles = grouped.sports;
-  const crimeArticles = grouped.crime;
-  const moviesArticles = grouped.movies;
+  // Only articles with a usable AI summary can actually be opened —
+  // openArticle() refuses the rest. The layouts were being handed the
+  // *unfiltered* lists, so a card could render an article that did nothing
+  // when clicked. Display and click have to come from the same list.
+  const displayable = useMemo(() => {
+    const result: Record<Category, Article[]> = {
+      breaking: [],
+      business: [],
+      sports: [],
+      crime: [],
+      movies: [],
+    };
+
+    for (const category of Object.keys(result) as Category[]) {
+      result[category] = grouped[category].filter(hasValidAiSummary);
+    }
+
+    return result;
+  }, [grouped]);
+
+  const breakingArticles = displayable.breaking;
+  const businessArticles = displayable.business;
+  const sportsArticles = displayable.sports;
+  const crimeArticles = displayable.crime;
+  const moviesArticles = displayable.movies;
 
   function articlesForSection(section: Category) {
-    if (section === "breaking") return breakingArticles.filter(hasValidAiSummary);
-    return grouped[section].filter(hasValidAiSummary);
+    return displayable[section];
   }
 
   return {
