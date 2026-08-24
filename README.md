@@ -36,13 +36,13 @@ Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, st
 ## Architecture
 
 ```
-~30 RSS feeds                Background scraper (every 30 min)
+18 RSS feeds                 Cron scraper (every 30 min)
       │                              │
       └──────────────────────────────┤ fuzzy dedupe
-                                     │ AI summarize (4-provider fallback)
+                                     │ AI summarize (5-provider fallback)
                                      │ prune > 2 days old
                                      ▼
-                              Postgres (Render)
+                              Postgres (managed)
                                      │
                         FastAPI  GET /news, /news/{cat}, /search
                                      │
@@ -54,7 +54,13 @@ Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, st
 | [`backend/scraper.py`](backend/scraper.py) | Feed ingestion, dedupe, the provider fallback chain |
 | [`backend/main.py`](backend/main.py) | API, rate limiting, security headers |
 | [`backend/source_policy.py`](backend/source_policy.py) | Per-source rules and image-copyright policy |
-| [`backend/db.py`](backend/db.py) | Pool management and retention pruning |
+| [`backend/fetcher.py`](backend/fetcher.py) | The one HTTP door: per-host throttle, bot-wall retry with a real browser TLS fingerprint |
+| [`backend/db.py`](backend/db.py) | Connection-pool lifecycle (retention pruning lives in `scraper.py`) |
+| [`.github/workflows/`](.github/workflows) | `unit-tests` on every push, `feed-liveness` daily |
+
+Scraping is owned by the **cron service**, not the API. `main.py` still contains an
+in-process scraper thread, but every deployment sets `DISABLE_BACKGROUND_SCRAPER=true`
+so the two can't scrape concurrently and double the LLM spend.
 
 ---
 
@@ -68,7 +74,8 @@ TruthVortex/
 ├─ frontend/     Next.js app
 │  └─ .env.local      Frontend config (git-ignored)
 ├─ render.yaml   Render blueprint (reference)
-└─ RAILWAY_DEPLOY.md  Railway deploy guide (reference)
+├─ RAILWAY_DEPLOY.md  Railway deploy guide (reference)
+└─ .github/workflows/  unit-tests + daily feed-liveness CI
 ```
 
 ## Live deployment
@@ -177,7 +184,7 @@ cd backend && .venv/bin/python check_feeds.py
 
 - **Telugu AI summaries** (5–8 lines) direct from LLM
 - **Multi-provider fallback** (OpenRouter → OpenRouter2 → NVIDIA → Groq → Gemini) for reliability
-- **Background auto-scraper** runs every 30 minutes
+- **Cron scraper** runs every 30 minutes
 - **2-day retention** — each cycle deletes articles older than
   `ARTICLE_RETENTION_DAYS` (2) and skips feed entries already that old
 - **Light/dark theme toggle**, persisted to `localStorage`, respects OS preference
