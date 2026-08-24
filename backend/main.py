@@ -21,6 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
 from db import get_cursor
@@ -97,6 +98,10 @@ def _get_client_ip(request: Request) -> str:
 limiter = Limiter(key_func=_get_client_ip, default_limits=["120/minute"])
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# slowapi only enforces `default_limits` when this middleware is installed —
+# without it the default is dead config and any route without its own
+# @limiter.limit decorator is completely unthrottled.
+app.add_middleware(SlowAPIMiddleware)
 
 
 # ─── Security headers ──────────────────────────────────────────
@@ -292,6 +297,7 @@ def root() -> dict[str, Any]:
 
 
 @app.get("/health")
+@limiter.exempt
 def health(response: Response) -> dict[str, Any]:
     """Readiness probe. Returns HTTP 503 when the DB is unreachable so that
     load balancers / platform health checks treat the instance as unhealthy.
