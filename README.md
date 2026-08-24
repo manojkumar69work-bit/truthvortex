@@ -124,7 +124,8 @@ Translate pipeline needed.
 
 ### Prerequisites
 
-- Python 3.12+
+- Python 3.13 (matches `backend/Dockerfile` and CI; `psycopg2-binary` is pinned to
+  2.9.10 for the cp313 wheel)
 - Node.js 20+
 - PostgreSQL running locally
 
@@ -152,6 +153,15 @@ npm run dev                    # http://localhost:3000
 
 ```bash
 cd backend && .venv/bin/python check_feeds.py
+```
+
+`check_feeds.py` reads `SOURCES` out of `scraper.py` with `ast.literal_eval` instead
+of importing it, so it needs no DB, no env, and no keys. CI runs it daily.
+
+### Running tests
+
+```bash
+cd backend && python test_webutil.py     # no DB, no env, no keys needed
 ```
 
 ## Environment variables
@@ -195,8 +205,8 @@ cd backend && .venv/bin/python check_feeds.py
 - **2-day retention** — each cycle deletes articles older than
   `ARTICLE_RETENTION_DAYS` (2) and skips feed entries already that old
 - **Light/dark theme toggle**, persisted to `localStorage`, respects OS preference
-- **Preview → detail** article view with prev/next navigation (keyboard arrows,
-  touch swipe) and Share button (Web Share API + clipboard fallback)
+- **Preview → detail** article view — arrow keys and desktop Previous/Next buttons,
+  swipe on mobile — and a Share button (Web Share API + clipboard fallback)
 - **Auto-rotating sections** — Breaking, Business, Sports, Crime, Movies
 - **Truncation-safe** summaries — retry chain ensures complete output
 - **Copyright-safe images** — sources are hand-curated to be logo- and
