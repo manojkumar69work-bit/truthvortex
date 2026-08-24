@@ -12,6 +12,10 @@ export function useNews() {
 
   const fetchNews = useCallback(async () => {
     if (typeof document !== "undefined" && document.hidden) {
+      // Nothing is in flight, so stop waiting on one. Returning without this
+      // left `loading` true forever when the page was first opened in a
+      // background tab, pinning the skeleton until the tab was focused.
+      setLoading(false);
       return;
     }
     try {
