@@ -16,10 +16,10 @@ Most Telugu news sites are ad-heavy walls of text. TruthVortex pulls 18 RSS feed
 A news feed that stalls is a dead product. But every free LLM tier rate-limits, and providers go down. So summarization runs through a **fallback chain** — if a provider returns a rate-limit or auth error, the next one takes over mid-run:
 
 ```
-OpenRouter (primary) → OpenRouter2 (key rotation) → NVIDIA → Groq
+OpenRouter (primary) → OpenRouter2 (key rotation) → NVIDIA → Groq → Gemini
 ```
 
-An article is only stored with `"Not available"` if *all four* are exhausted. Summaries are generated **directly in Telugu** by the model — no translation hop, so no round-trip degradation.
+Only providers whose key is present join the chain, and `AI_PROVIDER` promotes one to the front. If every one of them is exhausted the article is **skipped, not stored** — a row with no Telugu summary is worse than no row, so the summary is a hard ingest requirement. Summaries are generated **directly in Telugu** by the model — no translation hop, so no round-trip degradation.
 
 Three more things this had to survive:
 
@@ -94,18 +94,21 @@ TruthVortex/
 ### Multi-provider fallback chain
 
 ```
-OpenRouter (primary) → OpenRouter2 (key rotation) → NVIDIA (fallback 1) → Groq (fallback 2)
+OpenRouter (primary) → OpenRouter2 (key rotation) → NVIDIA → Groq → Gemini
 ```
 
-When a provider hits rate limits or auth errors, the next one is tried
-automatically. Articles are stored with `"Not available"` as the summary only
-when all providers are exhausted.
+Only providers with a key set are added, in that order; `AI_PROVIDER` promotes one
+to the front. A rate limit is retried on the same provider (5s, then 10s) before
+handing off, and a provider that rate-limits or auth-fails past that is dropped for
+the rest of the run. When every provider is exhausted the article is **skipped** —
+nothing is written without a Telugu summary.
 
-| Provider | Model |
-|----------|-------|
-| **OpenRouter** | `google/gemma-4-26b-a4b-it:free` |
-| **NVIDIA** | `nvidia/llama-3.3-nemotron-super-49b-v1.5` |
-| **Groq** | `meta-llama/llama-4-scout-17b-16e-instruct` |
+| Provider | Model (override) |
+|----------|------------------|
+| **OpenRouter** | `google/gemma-4-26b-a4b-it:free` (`OPENROUTER_MODEL`) |
+| **NVIDIA** | `nvidia/llama-3.3-nemotron-super-49b-v1.5` (`NVIDIA_MODEL`) |
+| **Groq** | `meta-llama/llama-4-scout-17b-16e-instruct` (`GROQ_MODEL`) |
+| **Gemini** | `models/gemini-2.5-flash` (`GEMINI_MODEL`) |
 
 Summaries are generated **directly in Telugu** by the AI model — no Google
 Translate pipeline needed.
@@ -173,7 +176,7 @@ cd backend && .venv/bin/python check_feeds.py
 ## Features
 
 - **Telugu AI summaries** (5–8 lines) direct from LLM
-- **Multi-provider fallback** (OpenRouter → NVIDIA → Groq) for reliability
+- **Multi-provider fallback** (OpenRouter → OpenRouter2 → NVIDIA → Groq → Gemini) for reliability
 - **Background auto-scraper** runs every 30 minutes
 - **2-day retention** — each cycle deletes articles older than
   `ARTICLE_RETENTION_DAYS` (2) and skips feed entries already that old
