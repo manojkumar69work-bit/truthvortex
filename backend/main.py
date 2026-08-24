@@ -344,7 +344,18 @@ def get_news_by_category(
     return _allowed_articles(rows, limit)
 
 
+# One scrape at a time per process. run_scraper() mutates module-level provider
+# state in scraper.py (_ACTIVE_PROVIDER_IDX, ai_client, AI_MODEL), and FastAPI
+# runs sync endpoints in a threadpool, so two overlapping POSTs would race each
+# other through the fallback chain.
+_scrape_lock = threading.Lock()
+
+
 @app.post("/scrape")
+# Rejected attempts count against this too, which is the point: it caps token
+# guessing. Kept above 1/min so a legitimate operator who fat-fingers the token
+# isn't locked out of their own endpoint for a minute.
+@limiter.limit("5/minute")
 def trigger_scrape(request: Request) -> dict[str, Any]:
     expected = os.getenv("SCRAPE_API_TOKEN", "")
 
@@ -369,14 +380,19 @@ def trigger_scrape(request: Request) -> dict[str, Any]:
     if not secrets.compare_digest(token.encode("utf-8"), expected.encode("utf-8")):
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    from scraper import run_scraper
+    if not _scrape_lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail="A scrape is already running")
 
     try:
+        from scraper import run_scraper
+
         run_scraper()
         return {"status": "ok", "message": "Scrape completed"}
     except Exception as exc:  # noqa: BLE001
         logger.exception("Manual scrape failed")
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+    finally:
+        _scrape_lock.release()
 
 
 @app.get("/search")
