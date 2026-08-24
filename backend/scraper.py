@@ -1885,7 +1885,7 @@ def run_scraper():
         cur.execute(
             "SELECT COALESCE(title_original, title) FROM news "
             "WHERE COALESCE(title_original, title) IS NOT NULL "
-            "ORDER BY published DESC LIMIT 1500;"
+            "ORDER BY published DESC NULLS LAST LIMIT 1500;"
         )
         existing_titles_set = {row[0] for row in cur.fetchall() if row[0]}
     log(f"Existing articles loaded: {len(existing_titles_set)}")
