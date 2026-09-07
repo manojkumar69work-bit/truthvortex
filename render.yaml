@@ -24,8 +24,11 @@ services:
         fromDatabase:
           name: truthvortex-db
           property: connectionString
+      # Groq leads the chain: the OpenRouter free tier now answers 429 on almost
+      # every call, and Groq's gpt-oss-120b returns clean Telugu in ~1s. The
+      # chain still falls back to OpenRouter, then NVIDIA, when Groq throttles.
       - key: AI_PROVIDER
-        value: openrouter
+        value: groq
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_API_KEY_2
@@ -61,8 +64,11 @@ services:
         fromDatabase:
           name: truthvortex-db
           property: connectionString
+      # Groq leads the chain: the OpenRouter free tier now answers 429 on almost
+      # every call, and Groq's gpt-oss-120b returns clean Telugu in ~1s. The
+      # chain still falls back to OpenRouter, then NVIDIA, when Groq throttles.
       - key: AI_PROVIDER
-        value: openrouter
+        value: groq
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_API_KEY_2
