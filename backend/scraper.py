@@ -110,7 +110,7 @@ if NVIDIA_API_KEY:
         "name": "nvidia",
         "api_key": _OVERRIDE_KEY or NVIDIA_API_KEY,
         "base_url": _provider_base_url("nvidia", "https://integrate.api.nvidia.com/v1"),
-        "model": _provider_model("nvidia", "nvidia/llama-3.3-nemotron-super-49b-v1.5"),
+        "model": _provider_model("nvidia", "nvidia/nemotron-3.5-lightning-30b-a3b"),
     }
 if GROQ_API_KEY:
     PROVIDERS_BY_NAME["groq"] = {
