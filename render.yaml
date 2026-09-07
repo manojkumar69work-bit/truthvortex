@@ -41,6 +41,17 @@ services:
         sync: false
       - key: NVIDIA_API_KEY
         sync: false
+      # Pin the models. The previous defaults both died in Aug 2026 --
+      # nvidia/llama-3.3-nemotron-super-49b-v1.5 hit EOL on 2026-08-26 (410) and
+      # meta-llama/llama-4-scout-17b-16e-instruct left Groq's catalogue (404) --
+      # which silently emptied the site of AI summaries.
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      # Last resort only: this account's NVIDIA tier exposes just the nemotron-3.x
+      # reasoning models, which take 35-47s and leak their thinking trace into the
+      # summary text. Fine as a backstop, wrong as a primary.
+      - key: NVIDIA_MODEL
+        value: nvidia/nemotron-3.5-lightning-30b-a3b
       - key: CORS_ALLOW_ORIGINS
         sync: false   # e.g. https://your-app.vercel.app
       # The cron service below is the single owner of scraping. Without this the
@@ -81,6 +92,17 @@ services:
         sync: false
       - key: NVIDIA_API_KEY
         sync: false
+      # Pin the models. The previous defaults both died in Aug 2026 --
+      # nvidia/llama-3.3-nemotron-super-49b-v1.5 hit EOL on 2026-08-26 (410) and
+      # meta-llama/llama-4-scout-17b-16e-instruct left Groq's catalogue (404) --
+      # which silently emptied the site of AI summaries.
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      # Last resort only: this account's NVIDIA tier exposes just the nemotron-3.x
+      # reasoning models, which take 35-47s and leak their thinking trace into the
+      # summary text. Fine as a backstop, wrong as a primary.
+      - key: NVIDIA_MODEL
+        value: nvidia/nemotron-3.5-lightning-30b-a3b
       - key: SAFE_IMAGES_ONLY
         value: "false"
       - key: MAX_CONCURRENT_SOURCES
