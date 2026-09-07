@@ -117,7 +117,7 @@ if GROQ_API_KEY:
         "name": "groq",
         "api_key": _OVERRIDE_KEY or GROQ_API_KEY,
         "base_url": _provider_base_url("groq", "https://api.groq.com/openai/v1"),
-        "model": _provider_model("groq", "meta-llama/llama-4-scout-17b-16e-instruct"),
+        "model": _provider_model("groq", "openai/gpt-oss-120b"),
     }
 if GEMINI_API_KEY and GEMINI_API_KEY.startswith("AIza"):
     PROVIDERS_BY_NAME["gemini"] = {
