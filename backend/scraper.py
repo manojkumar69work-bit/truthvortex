@@ -1286,7 +1286,16 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
         except Exception as e:
             error_msg = str(e).lower()
             is_rate_limit = "429" in error_msg or "too many requests" in error_msg or "rate limit" in error_msg or "quota" in error_msg or "resource_exhausted" in error_msg
-            is_auth_error = "404" in error_msg or "401" in error_msg or "403" in error_msg or "not found" in error_msg or "unauthorized" in error_msg or "api key" in error_msg
+            # A retired model answers 404 (gone from the catalogue) or 410 (the
+            # provider still knows the name and reports an EOL date). That is not
+            # an auth failure, and calling it one sends you checking the API key
+            # when the fix is the model name. It also must not fall through to the
+            # generic retry path: re-sending the same dead model 3x just adds 6s
+            # per article before the provider is finally dropped.
+            is_model_gone = ("410" in error_msg or "404" in error_msg or "not found" in error_msg
+                             or "end of life" in error_msg or "no longer available" in error_msg
+                             or "decommissioned" in error_msg)
+            is_auth_error = "401" in error_msg or "403" in error_msg or "unauthorized" in error_msg or "api key" in error_msg
 
             # A transient rate limit shouldn't permanently burn a provider.
             # Back off and retry the SAME provider a couple of times first;
@@ -1298,8 +1307,14 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
                 time.sleep(wait)
                 continue
 
-            if is_rate_limit or is_auth_error:
-                log(f"    [Skip] {AI_PROVIDER} {'rate limited' if is_rate_limit else 'auth error'}. Trying next provider...")
+            if is_rate_limit or is_auth_error or is_model_gone:
+                if is_rate_limit:
+                    reason = "rate limited"
+                elif is_model_gone:
+                    reason = f"model unavailable ({AI_MODEL})"
+                else:
+                    reason = "auth error"
+                log(f"    [Skip] {AI_PROVIDER} {reason}. Trying next provider...")
                 if _next_provider():
                     retries_remaining = 2
                     rate_limit_retries_remaining = 2
