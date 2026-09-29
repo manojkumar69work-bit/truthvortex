@@ -8,6 +8,8 @@ works.
 
 from __future__ import annotations
 
+import re
+
 # Categories that the API will accept and that the scraper will produce.
 # Order matters for any UI iteration that respects it.
 VALID_CATEGORIES: frozenset[str] = frozenset(
@@ -17,6 +19,35 @@ VALID_CATEGORIES: frozenset[str] = frozenset(
 # Sentinel category for content we want to drop (junk/horoscope/recipe/etc.).
 # Not exposed via the API.
 IGNORE_CATEGORY = "ignore"
+
+# Titles that mark lifestyle filler rather than news. Matched against the TITLE
+# only, as whole words: descriptions and bare words like "temple",
+# "relationship", "kitchen" or "puja" also turn up in real crime and business
+# stories (a temple donation fraud, a murder over a failed relationship, LPG
+# "cooking" gas), and matching those anywhere dropped them. Keep every entry
+# specific enough that it cannot describe a news event.
+JUNK_KEYWORDS: tuple[str, ...] = (
+    "astrology", "horoscope", "zodiac", "rashifal", "rashi phalalu",
+    "recipe", "beauty tips", "skin care", "skincare", "hair care",
+    "weight loss", "diet tips", "fashion tips", "optical illusion", "vastu",
+    "viral photo", "viral video",
+    "ఆస్ట్రాలజీ", "జ్యోతిష్యం", "రాశి ఫలాలు", "రాశిఫలాలు",
+    "వంటకం", "రెసిపీ", "బరువు తగ్గడం", "స్కిన్ కేర్", "హెయిర్ కేర్", "వాస్తు",
+)
+
+# \b is not enough for Telugu: vowel signs are combining marks, which \w does
+# not match, so "వంట" would match inside "వంటి" ("such as"). Treat the whole
+# Telugu block as word characters instead. The optional "s" covers plurals.
+_WORD = r"[\wఀ-౿]"
+_JUNK_RE = re.compile(
+    rf"(?<!{_WORD})(?:{'|'.join(re.escape(k) for k in JUNK_KEYWORDS)})s?(?!{_WORD})",
+    re.IGNORECASE,
+)
+
+
+def is_junk_title(title: str | None) -> bool:
+    """Return True if ``title`` names lifestyle filler we don't publish."""
+    return bool(title) and _JUNK_RE.search(title) is not None
 
 DEFAULT_CATEGORY = "breaking"
 
