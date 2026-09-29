@@ -868,21 +868,47 @@ def scrape_rss_source(source_config: dict) -> list[dict]:
 # =========================
 # PAGE / ARTICLE EXTRACTION
 # =========================
-def extract_image_from_page(url: str) -> str:
-    if SKIP_PAGE_IMAGE_EXTRACTION:
-        return ""
+def fetch_article_html(url: str, timeout: float = ARTICLE_TEXT_TIMEOUT) -> str:
+    """GET an article page and return its HTML, or "" on any failure.
 
+    _process_article fetches each page once and hands the HTML to both the
+    text and the image extractor; fetching it separately for each cost a second
+    request plus fetcher's per-host throttle wait on every image-less entry.
+    """
     try:
         response = fetcher.get(
             url,
             headers=HEADERS,
-            timeout=PAGE_IMAGE_TIMEOUT,
+            timeout=timeout,
         )
 
         set_response_encoding(response)
         response.raise_for_status()
+        return response.text
 
-        soup = BeautifulSoup(response.text, "html.parser")
+    except requests.exceptions.Timeout:
+        log("    [Article Page Timeout]")
+    except requests.exceptions.HTTPError as e:
+        log(f"    [Article Page HTTP Error] {e}")
+    except Exception as e:
+        log(f"    [Article Page Error] {e}")
+
+    return ""
+
+
+def extract_image_from_page(url: str, page_html: str | None = None) -> str:
+    """Best photo on the article page. Pass ``page_html`` to skip the fetch."""
+    if SKIP_PAGE_IMAGE_EXTRACTION:
+        return ""
+
+    if page_html is None:
+        page_html = fetch_article_html(url, timeout=PAGE_IMAGE_TIMEOUT)
+
+    if not page_html:
+        return ""
+
+    try:
+        soup = BeautifulSoup(page_html, "html.parser")
 
         og = soup.find("meta", property="og:image")
         if og and og.get("content"):
@@ -918,26 +944,22 @@ def extract_image_from_page(url: str) -> str:
             if found:
                 return found
 
-    except requests.exceptions.Timeout:
-        log("    [Image Page Timeout]")
     except Exception:
         pass
 
     return ""
 
 
-def extract_full_article_text(url: str) -> str:
+def extract_full_article_text(url: str, page_html: str | None = None) -> str:
+    """Article body text. Pass ``page_html`` to skip the fetch."""
+    if page_html is None:
+        page_html = fetch_article_html(url)
+
+    if not page_html:
+        return ""
+
     try:
-        response = fetcher.get(
-            url,
-            headers=HEADERS,
-            timeout=ARTICLE_TEXT_TIMEOUT,
-        )
-
-        set_response_encoding(response)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(page_html, "html.parser")
 
         for tag in soup(
             [
@@ -1023,10 +1045,6 @@ def extract_full_article_text(url: str) -> str:
             best_text = truncated
         return best_text.strip()
 
-    except requests.exceptions.Timeout:
-        log("    [Article Text Timeout]")
-    except requests.exceptions.HTTPError as e:
-        log(f"    [Article Text HTTP Error] {e}")
     except Exception as e:
         log(f"    [Article Text Error] {e}")
 
@@ -1742,7 +1760,8 @@ def _process_article(
         return None
 
     log("    Extracting full article text...")
-    full_article_text = extract_full_article_text(link)
+    page_html = fetch_article_html(link)
+    full_article_text = extract_full_article_text(link, page_html)
     log(f"    Full article text length: {len(full_article_text)}")
 
     if len(full_article_text) < MIN_FULL_ARTICLE_CHARS:
@@ -1760,7 +1779,7 @@ def _process_article(
     # watermarked hero image lives — so the placeholder is the only option.
     if not image and not image_risk:
         log("    Image not found in RSS. Checking article page...")
-        image = clean_image_url(extract_image_from_page(link))
+        image = clean_image_url(extract_image_from_page(link, page_html))
     if not image:
         log("    No image found anywhere. Using TruthVortex placeholder.")
         image = FALLBACK_NS_IMAGE
