@@ -472,21 +472,6 @@ SOURCES = [
 
 
 # =========================
-# JUNK FILTER ONLY
-# =========================
-JUNK_KEYWORDS = [
-    "astrology", "horoscope", "zodiac", "rashifal", "rashi phalalu",
-    "recipe", "food recipe", "cooking", "kitchen", "diet", "weight loss",
-    "beauty tips", "skin care", "hair care", "fashion", "relationship",
-    "optical illusion", "vastu", "devotional", "temple", "puja",
-    "viral photo", "viral video",
-    "ఆస్ట్రాలజీ", "జ్యోతిష్యం", "రాశి ఫలాలు", "రాశిఫలాలు",
-    "వంటకం", "రెసిపీ", "వంట", "ఫుడ్", "డైట్", "బరువు తగ్గడం",
-    "అందం", "స్కిన్ కేర్", "హెయిర్ కేర్", "వాస్తు", "భక్తి",
-]
-
-
-# =========================
 # DB
 # =========================
 def ensure_table():
@@ -605,21 +590,15 @@ def safe_translate(text: str) -> str:
         return text
 
 
-def contains_any(text: str, keywords: list[str]) -> bool:
-    lowered = (text or "").lower()
-    return any(keyword.lower() in lowered for keyword in keywords)
-
-
-def choose_final_category(title: str, text: str, source_category: str) -> str:
+def choose_final_category(title: str, source_category: str) -> str:
     """
     Final deployment-safe category rule:
-    - Junk content is dropped (``cats.IGNORE_CATEGORY``).
+    - Junk content is dropped (``cats.IGNORE_CATEGORY``), judged on the title
+      alone — see ``categories.JUNK_KEYWORDS``.
     - Otherwise the category comes from the source config.
     - The single source of truth is ``categories.VALID_CATEGORIES``.
     """
-    combined = f"{title or ''} {text or ''}".lower()
-
-    if contains_any(combined, JUNK_KEYWORDS):
+    if cats.is_junk_title(title):
         return cats.IGNORE_CATEGORY
 
     return cats.normalize(source_category)
@@ -1752,7 +1731,6 @@ def _process_article(
 
     final_category = choose_final_category(
         title=title,
-        text=f"{desc} {title}",
         source_category=source_category,
     )
     log(f"    Source category: {source_category}")
