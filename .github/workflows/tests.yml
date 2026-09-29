@@ -31,3 +31,7 @@ jobs:
       - name: Run webutil unit tests
         working-directory: backend
         run: python test_webutil.py
+
+      - name: Run categories unit tests
+        working-directory: backend
+        run: python test_categories.py
