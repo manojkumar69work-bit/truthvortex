@@ -20,6 +20,7 @@ import { MobileLayout } from "@/components/MobileLayout";
 import { DesktopLayout } from "@/components/DesktopLayout";
 import { SectionModal } from "@/components/SectionModal";
 import { ArticleModal } from "@/components/ArticleModal";
+import { TvIntro } from "@/components/TvIntro";
 import type { Category, ActiveArticle } from "@/components/types";
 
 export default function Home() {
@@ -278,6 +279,8 @@ export default function Home() {
           }
         }
       `}</style>
+
+      <TvIntro />
 
       <MobileLayout
         loading={loading}
