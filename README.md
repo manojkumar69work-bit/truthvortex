@@ -1,13 +1,13 @@
-# TruthVortex
+# Red4ce
 
 **Telugu news, summarized by AI, refreshed every 30 minutes.**
 
-Most Telugu news sites are ad-heavy walls of text. TruthVortex pulls 18 RSS feeds across 5 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
+Most Telugu news sites are ad-heavy walls of text. Red4ce pulls 25 feeds (RSS plus Eenadu and Andhra Jyothy news sitemaps) across 6 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
 
 **🔗 [truthvortex-sigma.vercel.app](https://truthvortex-sigma.vercel.app)** · FastAPI + Postgres + Next.js 15 · live
 
 <!-- TODO: add a screenshot here — the TV-style dashboard is the whole pitch and
-     a reader can't see it from prose. ![TruthVortex dashboard](docs/screenshot.png) -->
+     a reader can't see it from prose. ![Red4ce dashboard](docs/screenshot.png) -->
 
 ---
 
@@ -36,7 +36,7 @@ Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, st
 ## Architecture
 
 ```
-18 RSS feeds                 Cron scraper (every 30 min)
+25 feeds (RSS + sitemaps)    Cron scraper (every 30 min)
       │                              │
       └──────────────────────────────┤ fuzzy dedupe
                                      │ AI summarize (5-provider fallback)
@@ -68,7 +68,7 @@ so the two can't scrape concurrently and double the LLM spend.
 <summary><b>Full setup, environment variables, and API reference</b></summary>
 
 ```
-TruthVortex/
+Red4ce/
 ├─ backend/      FastAPI API (main.py) + scraper (scraper.py) + shared db/categories
 │  └─ .env            Local config (git-ignored)
 ├─ frontend/     Next.js app
@@ -88,8 +88,10 @@ TruthVortex/
 
 ## How it works
 
-1. **Scrape** — A cron service fetches 18 curated RSS feeds across 5 categories:
-   Breaking, Business, Sports, Movies, Crime.
+1. **Scrape** — A cron service fetches 25 curated sources across 6 categories:
+   Breaking, Business, Sports, Movies, Crime, Education. Telugu dailies: Sakshi
+   (Andhra Pradesh, Movies, Education RSS), Eenadu and Andhra Jyothy (Crime and
+   Latest, read from their Google News sitemaps since neither publishes RSS).
 2. **Summarize** — Each article's full text is sent through an AI pipeline that
    generates a 5–8 line Telugu summary directly.
 3. **Serve** — A FastAPI endpoint (`GET /news`) returns the articles sorted by
@@ -186,6 +188,11 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 | `ENABLE_IMPERSONATE_FALLBACK` | No | Retry a bot-walled fetch once with a browser TLS fingerprint |
 | `SAFE_IMAGES_ONLY` | No | `false` (default) — `true` drops every source photo for the placeholder |
 | `SCRAPE_API_TOKEN` | Only to use `/scrape` | Bearer token for `/scrape`. Unset means the endpoint refuses every call with 503 |
+| `ADMIN_TOKEN` | Only to use `/admin` | Newsroom bearer token, 32+ chars. Unset or shorter means every `/admin` call gets 503 |
+| `ANALYTICS_SALT` | Recommended | Secret salt for the daily visitor hash; unset uses a per-process random salt |
+| `ANALYTICS_RETENTION_DAYS` | No | `90` (default) — analytics events older than this are deleted |
+| `SITE_NAME` | No | `Red4ce` (default) — source name on newsroom articles |
+| `MAX_UPLOAD_BYTES` | No | `3145728` (default) — newsroom image size limit |
 | `SCRAPER_INTERVAL_MINUTES` | No | `30` (default); only used by the in-process thread |
 | `ARTICLE_RETENTION_DAYS` | No | `2` (default); `0` keeps articles forever |
 | `DB_POOL_MAX` | No | `5` (default) |
@@ -196,8 +203,20 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 |-----|----------|-------|
 | `NEXT_PUBLIC_API_URL` | Yes | Backend base URL (without `/news`) |
 | `NEXT_PUBLIC_SITE_URL` | No | Public URL for SEO/OG metadata |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | No | Corrections/takedown address shown on `/policy` |
 
 ## Features
+
+- **Newsroom at `/admin`** — write and publish Red4ce originals with our own
+  uploaded photos, save drafts, and manage/search every article (ours and
+  feeds): edit, hide, delete. Originals are never removed by retention.
+- **Analytics** — visitors, page views, most-read articles, sections,
+  referrers and devices, from a cookie-free first-party beacon
+- **Security** — admin token (32+ chars, fails closed), 5-failure IP lockout,
+  magic-byte image validation, audit log of every newsroom change, security
+  headers on the frontend, `/admin` noindexed
+- **Content policy at `/policy`** — editorial rules (original work only, no
+  copied text or photos) enforced by the newsroom, plus ownership and terms
 
 - **Telugu AI summaries** (5–8 lines) direct from LLM
 - **Multi-provider fallback** (OpenRouter → OpenRouter2 → NVIDIA → Groq → Gemini) for reliability
@@ -225,6 +244,9 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 | `GET /news/{category}` | Articles in a single category |
 | `GET /search?q=...` | ILIKE search across title/summary/ai_summary/source |
 | `POST /scrape` | Trigger scraper (auth: `Bearer <SCRAPE_API_TOKEN>`) |
+| `POST /track` | Cookie-free analytics beacon (pageview / article_view / source_click) |
+| `GET /media/{id}` | Images uploaded in the newsroom |
+| `/admin/*` | Newsroom API (auth: `Bearer <ADMIN_TOKEN>`): `GET/POST /admin/articles`, `GET/PUT/DELETE /admin/articles/{id}`, `POST /admin/media`, `GET /admin/analytics`, `GET /admin/audit` |
 
 All routes are per-IP rate limited: 60/min on `/news` and `/news/{category}`,
 30/min on `/search`, 5/min on `/scrape`, and a 120/min default on anything else.
