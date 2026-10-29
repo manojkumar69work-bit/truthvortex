@@ -138,6 +138,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+        # get_conn()'s liveness probe (SELECT 1) leaves a transaction open, and
+        # psycopg2 refuses to switch autocommit inside one. Without this
+        # rollback ensure_schema() failed on every boot.
+        conn.rollback()
 
 # ─── Schema ────────────────────────────────────────────────────
 def ensure_schema() -> None:
