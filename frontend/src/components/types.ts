@@ -1,4 +1,4 @@
-export type Category = "breaking" | "business" | "sports" | "movies" | "crime";
+export type Category = "breaking" | "business" | "sports" | "movies" | "crime" | "education";
 
 export type Article = {
   id: number;

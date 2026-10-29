@@ -26,6 +26,8 @@ export function normalizeCategory(value?: string | null): Category {
   if (cat.includes("crime")) return "crime";
   if (cat.includes("police")) return "crime";
 
+  if (cat.includes("education") || cat.includes("exam") || cat.includes("jobs")) return "education";
+
   if (CATEGORIES.includes(cat as Category)) return cat as Category;
 
   return "breaking";

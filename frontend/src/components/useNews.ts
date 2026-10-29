@@ -87,6 +87,7 @@ export function useNews() {
       sports: [],
       crime: [],
       movies: [],
+      education: [],
     };
 
     for (const article of articles) {
@@ -107,6 +108,7 @@ export function useNews() {
       sports: [],
       crime: [],
       movies: [],
+      education: [],
     };
 
     for (const category of Object.keys(result) as Category[]) {
@@ -121,6 +123,7 @@ export function useNews() {
   const sportsArticles = displayable.sports;
   const crimeArticles = displayable.crime;
   const moviesArticles = displayable.movies;
+  const educationArticles = displayable.education;
 
   function articlesForSection(section: Category) {
     return displayable[section];
@@ -136,6 +139,7 @@ export function useNews() {
     sportsArticles,
     crimeArticles,
     moviesArticles,
+    educationArticles,
     articlesForSection,
     refetch: fetchNews,
   };
