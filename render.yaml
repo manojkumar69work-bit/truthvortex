@@ -1,4 +1,4 @@
-# ─── Render blueprint for TruthVortex ──────────────────────────────────────
+# ─── Render blueprint for Red4ce ──────────────────────────────────────
 # Deploys: managed Postgres + FastAPI web service + scheduled scraper cron.
 # Frontend (Next.js) is deployed separately on Vercel — see README.
 #

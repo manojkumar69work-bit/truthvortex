@@ -33,7 +33,7 @@ from urllib.parse import urlparse
 
 import requests
 
-logger = logging.getLogger("truthvortex.fetcher")
+logger = logging.getLogger("red4ce.fetcher")
 if not logger.handlers:
     _handler = logging.StreamHandler()
     _handler.setFormatter(logging.Formatter("%(message)s"))

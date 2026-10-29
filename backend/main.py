@@ -1,4 +1,4 @@
-"""TruthVortex FastAPI app.
+"""Red4ce FastAPI app.
 
 Endpoints:
 - GET /            → service banner
@@ -34,9 +34,9 @@ logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
 )
-logger = logging.getLogger("truthvortex")
+logger = logging.getLogger("red4ce")
 
-app = FastAPI(title="TruthVortex API")
+app = FastAPI(title="Red4ce API")
 
 
 # ─── Background scraper (runs every 30 min) ───────────────────
@@ -309,7 +309,7 @@ def _shutdown() -> None:
 @app.get("/")
 def root() -> dict[str, Any]:
     return {
-        "message": "TruthVortex API is running",
+        "message": "Red4ce API is running",
         "endpoints": ["/news", "/news/{category}", "/search", "/scrape", "/health"],
     }
 

@@ -9,7 +9,7 @@ from urllib.parse import urljoin, urlparse
 # Configure module-level logger. This module is deliberately dependency-free
 # with respect to scraper.py (importing it would be circular), so it owns its
 # own logger instead of reusing scraper's `log()` shim.
-logger = logging.getLogger("truthvortex.webutil")
+logger = logging.getLogger("red4ce.webutil")
 if not logger.handlers:
     _handler = logging.StreamHandler()
     _handler.setFormatter(logging.Formatter("%(message)s"))

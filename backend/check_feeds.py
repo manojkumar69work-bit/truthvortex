@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_feeds.py — Authoritative RSS feed liveness checker for TruthVortex.
+check_feeds.py — Authoritative RSS feed liveness checker for Red4ce.
 
 Why this exists:
   Feed liveness can only be confirmed with a real HTTP request. This script

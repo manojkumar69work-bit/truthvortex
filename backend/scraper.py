@@ -3,7 +3,7 @@ import os
 
 # Configure module-level logger; the `log()` shim below keeps every existing
 # callsite working without changes while routing output through stdlib logging.
-logger = logging.getLogger("truthvortex.scraper")
+logger = logging.getLogger("red4ce.scraper")
 if not logger.handlers:
     _handler = logging.StreamHandler()
     _handler.setFormatter(logging.Formatter("%(message)s"))
@@ -319,7 +319,7 @@ FALLBACK_NS_IMAGE = (
     "%3Ctext x='50%25' y='46%25' dominant-baseline='middle' text-anchor='middle' "
     "font-family='Arial, Helvetica, sans-serif' font-size='156' font-weight='900' fill='white'%3ETV%3C/text%3E"
     "%3Ctext x='50%25' y='61%25' dominant-baseline='middle' text-anchor='middle' "
-    "font-family='Arial, Helvetica, sans-serif' font-size='42' font-weight='700' fill='%2394a3b8'%3ETruthVortex%3C/text%3E"
+    "font-family='Arial, Helvetica, sans-serif' font-size='42' font-weight='700' fill='%2394a3b8'%3ERed4ce%3C/text%3E"
     "%3C/svg%3E"
 )
 
@@ -327,7 +327,7 @@ FALLBACK_NS_IMAGE = (
 # publisher logos / watermarks, so by default the scraper KEEPS the real
 # source photo (after passing it through the logo/junk-URL filter below).
 # Set SAFE_IMAGES_ONLY=true to ignore all source images and always fall back
-# to the built-in TruthVortex placeholder instead.
+# to the built-in Red4ce placeholder instead.
 SAFE_IMAGES_ONLY = os.getenv("SAFE_IMAGES_ONLY", "false").lower() == "true"
 
 
@@ -1781,7 +1781,7 @@ def _process_article(
         log("    Image not found in RSS. Checking article page...")
         image = clean_image_url(extract_image_from_page(link, page_html))
     if not image:
-        log("    No image found anywhere. Using TruthVortex placeholder.")
+        log("    No image found anywhere. Using Red4ce placeholder.")
         image = FALLBACK_NS_IMAGE
     else:
         log(f"    Image: {image[:80]}")
@@ -1876,7 +1876,7 @@ def _process_article(
 def run_scraper():
     _reset_providers()
     log("=" * 60)
-    log("TruthVortex Scraper Starting...")
+    log("Red4ce Scraper Starting...")
     log("=" * 60)
     start_time = time.time()
 

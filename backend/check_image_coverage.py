@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Image-coverage checker for TruthVortex sources.
+Image-coverage checker for Red4ce sources.
 
-The scraper always falls back to the TruthVortex placeholder, so you cannot tell
+The scraper always falls back to the Red4ce placeholder, so you cannot tell
 from the code which feeds actually ship real images. This script fetches every
 source LIVE (needs internet) and reports, per channel, how many sampled
 articles carry a genuine image (non-empty, not a logo, not the placeholder).

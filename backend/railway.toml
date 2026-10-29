@@ -1,4 +1,4 @@
-# ─── Railway config for the TruthVortex API (web service) ──────────────────
+# ─── Railway config for the Red4ce API (web service) ──────────────────
 # Set this service's Root Directory to `backend` in the Railway dashboard.
 # Railway injects $PORT automatically; the Dockerfile CMD already honors it.
 #
