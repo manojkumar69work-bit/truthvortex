@@ -62,12 +62,15 @@ def check_one(src: dict) -> dict:
         resp = requests.get(url, timeout=TIMEOUT,
                             headers={"User-Agent": USER_AGENT})
         result["status"] = resp.status_code
-        parsed = feedparser.parse(resp.content)
-        result["entries"] = len(parsed.entries)
-        result["ok"] = resp.status_code < 400 and len(parsed.entries) > 0
+        if src.get("type") == "sitemap":
+            # A news sitemap is not a feed; count its <url> entries instead.
+            result["entries"] = resp.content.count(b"<url>")
+        else:
+            result["entries"] = len(feedparser.parse(resp.content).entries)
+        result["ok"] = resp.status_code < 400 and result["entries"] > 0
         if not result["ok"] and not result["error"]:
             result["error"] = (
-                f"HTTP {resp.status_code}, {len(parsed.entries)} entries"
+                f"HTTP {resp.status_code}, {result['entries']} entries"
             )
     except Exception as exc:  # noqa: BLE001
         result["error"] = f"{type(exc).__name__}: {exc}"

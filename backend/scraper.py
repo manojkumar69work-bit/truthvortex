@@ -16,6 +16,7 @@ import threading
 import time
 import html
 import calendar
+from xml.etree import ElementTree
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -1225,6 +1226,96 @@ RULES:
 - The HEADLINE must also be rewritten/summarized in Telugu, not copied from the source.
 - One sentence per line. No empty lines.
 - Only facts from the article. No opinions.
+_SITEMAP_NS = {
+    "sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
+    "news": "http://www.google.com/schemas/sitemap-news/0.9",
+    "image": "http://www.google.com/schemas/sitemap-image/1.1",
+}
+
+
+def _sitemap_text(node, path: str) -> str:
+    found = node.find(path, _SITEMAP_NS)
+    return (found.text or "").strip() if found is not None else ""
+
+
+def scrape_sitemap_source(source_config: dict) -> list[dict]:
+    """Read a Google News sitemap (<urlset> with <news:news> entries).
+
+    ``path_contains`` / ``keyword_contains`` pick entries: an entry is kept if
+    its URL contains any path fragment or its <news:keywords> contains any
+    keyword (case-insensitive). With neither set, every entry is kept.
+    Newest entries first, capped at MAX_ENTRIES_PER_SOURCE.
+    """
+    source_name = source_config["name"]
+    sitemap_url = source_config["url"]
+    source_category = source_config["category"]
+    paths = [p.lower() for p in source_config.get("path_contains", [])]
+    keywords = [k.lower() for k in source_config.get("keyword_contains", [])]
+
+    log(f"  Fetching SITEMAP: {source_name}")
+    log(f"  URL: {sitemap_url}")
+
+    try:
+        response = fetcher.get(sitemap_url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        root = ElementTree.fromstring(response.content)
+    except ElementTree.ParseError as e:
+        # Eenadu answers unknown URLs with a 200 HTML page, so a moved
+        # sitemap surfaces here rather than as an HTTP error.
+        log(f"  ✗ Sitemap is not XML: {e}")
+        return []
+    except Exception as e:
+        log(f"  ✗ Sitemap request error: {e}")
+        return []
+
+    entries = []
+    for url in root.findall("sm:url", _SITEMAP_NS):
+        link = _sitemap_text(url, "sm:loc")
+        title = clean_html_text(_sitemap_text(url, "news:news/news:title"))
+        if not link or not title:
+            continue
+
+        kw = _sitemap_text(url, "news:news/news:keywords").lower()
+        lowered_link = link.lower()
+        if (paths or keywords) and not (
+            any(p in lowered_link for p in paths) or any(k in kw for k in keywords)
+        ):
+            continue
+
+        published_dt = None
+        raw_date = _sitemap_text(url, "news:news/news:publication_date")
+        if raw_date:
+            try:
+                published_dt = datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+                if published_dt.tzinfo is None:
+                    published_dt = published_dt.replace(tzinfo=timezone.utc)
+                published_dt = published_dt.astimezone(timezone.utc)
+            except ValueError:
+                published_dt = None
+
+        image = "" if SAFE_IMAGES_ONLY else clean_image_url(
+            _sitemap_text(url, "image:image/image:loc")
+        )
+
+        entries.append(
+            {
+                "source": source_name,
+                "title": title,
+                "link": link,
+                "description": "",
+                "image": image,
+                "source_category": source_category,
+                "source_type": "sitemap",
+                "published_dt": published_dt,
+            }
+        )
+
+    epoch = datetime.min.replace(tzinfo=timezone.utc)
+    entries.sort(key=lambda e: e["published_dt"] or epoch, reverse=True)
+    log(f"  ✓ {len(entries)} matching sitemap entries")
+    return entries[:MAX_ENTRIES_PER_SOURCE]
+
+
 - No bullets, numbers, headings, or extra text.
 
 TITLE: {title}
@@ -1755,6 +1846,8 @@ def _process_article(
     if is_duplicate_title(title, existing_titles_set):
         total_seen["dup"] += 1
         log("    Skipped: duplicate title")
+        if stype == "sitemap":
+            return name, scrape_sitemap_source(source_config)
         return None
 
     if is_bad_placeholder_summary(title) or is_bad_placeholder_summary(desc):
