@@ -4,6 +4,7 @@ import { useState, useEffect, memo, useCallback } from "react";
 import { SafeImage } from "./SafeImage";
 import { getImage, getDirectImage, getText } from "./utils";
 import { LABELS } from "./constants";
+import { track } from "./track";
 import type { ActiveArticle } from "./types";
 
 export const ArticleModal = memo(function ArticleModal({
@@ -20,6 +21,11 @@ export const ArticleModal = memo(function ArticleModal({
   onNext: () => void;
 }) {
   const { article, section, index } = active;
+  // Feed links come from third-party RSS: only ever render http(s) ones.
+  const sourceLink =
+    !article.is_original && article.link && /^https?:\/\//i.test(article.link)
+      ? article.link
+      : null;
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [shared, setShared] = useState(false);
@@ -115,6 +121,9 @@ export const ArticleModal = memo(function ArticleModal({
 
           <div className="p-5 sm:p-7">
             <div className="mb-4 flex flex-wrap items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+              {article.is_original && (
+                <span className="rounded bg-red-600 px-2 py-0.5 text-white">Red4ce Original</span>
+              )}
               <span>{article.source || "Red4ce"}</span>
             </div>
 
@@ -123,7 +132,7 @@ export const ArticleModal = memo(function ArticleModal({
             </h2>
 
             <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
-              <p className="font-news-summary whitespace-normal text-[17px] leading-8 text-slate-700 sm:text-lg sm:leading-9">
+              <p className={`font-news-summary ${article.is_original ? "whitespace-pre-line" : "whitespace-normal"} text-[17px] leading-8 text-slate-700 sm:text-lg sm:leading-9`}>
                 {getText(article)}
               </p>
             </div>
@@ -135,6 +144,23 @@ export const ArticleModal = memo(function ArticleModal({
             >
               {shared ? "Link copied ✓" : "Share ↗"}
             </button>
+
+            {sourceLink && (
+              <p className="mt-4 text-xs font-bold text-slate-500">
+                Summary by Red4ce. Original reporting:{" "}
+                <a
+                  href={sourceLink}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="text-red-600 underline underline-offset-2"
+                  onClick={() =>
+                    track({ kind: "source_click", article_id: article.id, category: section })
+                  }
+                >
+                  {article.source || "source"} ↗
+                </a>
+              </p>
+            )}
           </div>
         </div>
 
