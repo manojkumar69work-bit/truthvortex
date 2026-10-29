@@ -206,6 +206,7 @@ MAX_CONCURRENT_SOURCES = int(os.getenv("MAX_CONCURRENT_SOURCES", "1"))
 # feed entries already older than this are never ingested. 0 disables purging.
 ARTICLE_RETENTION_DAYS = int(os.getenv("ARTICLE_RETENTION_DAYS", "2"))
 
+ANALYTICS_RETENTION_DAYS = int(os.getenv("ANALYTICS_RETENTION_DAYS", "90"))
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "12"))
 PAGE_IMAGE_TIMEOUT = int(os.getenv("PAGE_IMAGE_TIMEOUT", "6"))
 ARTICLE_TEXT_TIMEOUT = int(os.getenv("ARTICLE_TEXT_TIMEOUT", "10"))
@@ -504,7 +505,10 @@ def ensure_table():
 
 
 def purge_old_articles(days: int = None) -> int:
-    """Delete articles older than ``days``. Returns the number of rows deleted.
+    """Delete feed articles older than ``days``. Returns the number of rows deleted.
+
+    Articles written in the admin newsroom (``is_original``) are never pruned:
+    retention exists to cap scraped volume, not to expire our own reporting.
 
     ``published`` is stored as a naive UTC timestamp (feed dates are converted
     to UTC before insert), so the cutoff is computed in UTC too rather than in
@@ -518,7 +522,8 @@ def purge_old_articles(days: int = None) -> int:
     with get_cursor(commit=True) as cur:
         cur.execute(
             "DELETE FROM news "
-            "WHERE published < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
+            "WHERE NOT is_original "
+            "AND published < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
             (days,),
         )
         deleted = cur.rowcount or 0
@@ -588,6 +593,13 @@ def safe_translate(text: str) -> str:
         return translated if translated else text
     except Exception as e:
         log(f"    [Translation Error] {e}")
+        # Analytics rows have their own, longer window.
+        if ANALYTICS_RETENTION_DAYS > 0:
+            cur.execute(
+                "DELETE FROM events "
+                "WHERE ts < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
+                (ANALYTICS_RETENTION_DAYS,),
+            )
         return text
 
 
