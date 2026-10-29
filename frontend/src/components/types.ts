@@ -10,6 +10,7 @@ export type Article = {
   source?: string | null;
   link?: string | null;
   published?: string | null;
+  is_original?: boolean;
 };
 
 export type ActiveArticle = {

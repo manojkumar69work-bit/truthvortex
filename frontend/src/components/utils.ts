@@ -1,4 +1,4 @@
-import { CATEGORIES, FALLBACK_IMAGE } from "./constants";
+import { API_BASE, CATEGORIES, FALLBACK_IMAGE } from "./constants";
 import type { Article, Category } from "./types";
 
 export function normalizeCategory(value?: string | null): Category {
@@ -81,10 +81,20 @@ export function getText(article?: Article | null) {
   return article?.ai_summary?.trim() || article?.summary?.trim() || "";
 }
 
+// Images uploaded in the admin newsroom are stored as "/media/<id>" on the API.
+function ownMediaUrl(image: string) {
+  return image.startsWith("/media/") ? API_BASE + image : null;
+}
+
 export function getImage(article?: Article | null) {
   const image = article?.image?.trim();
 
   if (!image || image.startsWith("data:")) return FALLBACK_IMAGE;
+
+  // Our own uploads are already sized by the editor and served with a
+  // long cache; no need to route them through the resizing proxy.
+  const own = ownMediaUrl(image);
+  if (own) return own;
 
   // Try direct image first; if it fails (CORS/blocked), fallback to wsrv
   const wsrvUrl = `https://images.weserv.nl/?url=${encodeURIComponent(image)}&w=600&output=webp&q=80`;
@@ -97,7 +107,7 @@ export function getImage(article?: Article | null) {
 export function getDirectImage(article?: Article | null) {
   const image = article?.image?.trim();
   if (!image || image.startsWith("data:")) return FALLBACK_IMAGE;
-  return image;
+  return ownMediaUrl(image) ?? image;
 }
 
 export function todayLabel() {
