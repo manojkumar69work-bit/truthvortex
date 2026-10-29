@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 
 export const metadata = {
   title: "Page not found",
-  description: "The page you are looking for could not be found on TruthVortex.",
+  description: "The page you are looking for could not be found on Red4ce.",
 };
 
 const mainStyle: CSSProperties = {
@@ -63,7 +63,7 @@ export default function NotFound() {
   return (
     <main style={mainStyle}>
       <div aria-hidden="true" style={badgeStyle}>
-        NS
+        R4
       </div>
       <h1 style={headingStyle}>404 — Page not found</h1>
       <p style={textStyle}>
@@ -71,7 +71,7 @@ export default function NotFound() {
         back to the live news dashboard.
       </p>
       <Link href="/" style={linkStyle}>
-        Back to TruthVortex
+        Back to Red4ce
       </Link>
     </main>
   );

@@ -115,7 +115,7 @@ export const ArticleModal = memo(function ArticleModal({
 
           <div className="p-5 sm:p-7">
             <div className="mb-4 flex flex-wrap items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-              <span>{article.source || "TruthVortex"}</span>
+              <span>{article.source || "Red4ce"}</span>
             </div>
 
             <h2 className="font-news-headline text-[27px] leading-[1.18] tracking-[-0.03em] text-[#071225] sm:text-4xl sm:leading-tight">

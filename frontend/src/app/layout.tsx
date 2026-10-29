@@ -3,19 +3,19 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://truthvortex.example";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://red4ce.example";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "TruthVortex — Live News Dashboard",
-    template: "%s · TruthVortex",
+    default: "Red4ce — Live News Dashboard",
+    template: "%s · Red4ce",
   },
   description:
-    "TruthVortex is a live news dashboard aggregating Breaking, Sports, Business, Movies, and Crime headlines with concise Telugu summaries.",
-  applicationName: "TruthVortex",
+    "Red4ce is a live news dashboard aggregating Breaking, Sports, Business, Movies, and Crime headlines with concise Telugu summaries.",
+  applicationName: "Red4ce",
   keywords: [
-    "TruthVortex",
+    "Red4ce",
     "live news",
     "Telugu news",
     "breaking news",
@@ -25,12 +25,12 @@ export const metadata: Metadata = {
     "movies",
     "crime",
   ],
-  authors: [{ name: "TruthVortex" }],
+  authors: [{ name: "Red4ce" }],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    siteName: "TruthVortex",
-    title: "TruthVortex — Live News Dashboard",
+    siteName: "Red4ce",
+    title: "Red4ce — Live News Dashboard",
     description:
       "Live headlines across Breaking, Sports, Business, Movies, and Crime with concise Telugu summaries.",
     url: siteUrl,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TruthVortex — Live News Dashboard",
+    title: "Red4ce — Live News Dashboard",
     description:
       "Live headlines across Breaking, Sports, Business, Movies, and Crime with concise Telugu summaries.",
   },

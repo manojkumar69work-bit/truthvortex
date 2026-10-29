@@ -27,8 +27,8 @@ export function TvIntro() {
     <div className="tv-intro" aria-hidden="true" onClick={() => setDone(true)}>
       <div className="tv-intro__screen" />
       <div className="tv-intro__brand">
-        <span className="tv-intro__word tv-intro__word--left">Truth</span>
-        <span className="tv-intro__word tv-intro__word--right">Vortex</span>
+        <span className="tv-intro__word tv-intro__word--left">Red</span>
+        <span className="tv-intro__word tv-intro__word--right">4ce</span>
       </div>
       <div className="tv-intro__bar">
         <span className="tv-intro__live">

@@ -288,6 +288,7 @@ html:has(.tv-root) {
 }
 
 .tv-intro__word--left {
+  color: #ef4444;
   animation: tvInLeft 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
 }
 

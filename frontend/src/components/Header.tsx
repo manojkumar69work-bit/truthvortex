@@ -20,8 +20,8 @@ export const Header = memo(function Header({
     <header className="tv-cell grid h-[76px] shrink-0 grid-cols-[300px_1fr] border-b-[3px] border-double">
       <div className="tv-cell flex flex-col justify-center border-r pr-6">
         <h1 className="text-[34px] font-black leading-none tracking-tight text-[#071225]">
-          <span>Truth</span>
-          <span className="text-red-600">Vortex</span>
+          <span className="text-red-600">Red</span>
+          <span>4ce</span>
         </h1>
         <p className="mt-1.5 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
           {mounted ? todayLabel() : ""}
