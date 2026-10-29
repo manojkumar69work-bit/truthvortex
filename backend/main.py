@@ -25,7 +25,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
-from db import get_cursor
+from db import ensure_newsroom_schema, get_cursor
 from source_policy import BANNED_SOURCE_KEYWORDS, has_image_risk, is_blocked_source
 
 load_dotenv()
@@ -163,6 +163,7 @@ def ensure_schema() -> None:
                     source TEXT,
                     title TEXT,
                     title_original TEXT,
+            ensure_newsroom_schema(cur)
                     link TEXT UNIQUE,
                     summary TEXT,
                     ai_summary TEXT,

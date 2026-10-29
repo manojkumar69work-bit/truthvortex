@@ -146,6 +146,66 @@ def get_cursor(
             cur.close()
 
 
+def ensure_newsroom_schema(cur: psycopg2.extensions.cursor) -> None:
+    """Columns and tables for the admin newsroom and analytics (idempotent).
+
+    Shared by the API's ensure_schema() and the scraper's ensure_table(): the
+    scraper's retention purge filters on ``is_original``, so whichever process
+    boots first against a fresh database has to create it.
+    """
+    # Own articles are never pruned; drafts are never served. ADD COLUMN with a
+    # constant DEFAULT fills existing rows without a table rewrite (PG 11+).
+    cur.execute(
+        "ALTER TABLE news ADD COLUMN IF NOT EXISTS is_original BOOLEAN NOT NULL DEFAULT FALSE;"
+    )
+    cur.execute(
+        "ALTER TABLE news ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published';"
+    )
+    cur.execute("ALTER TABLE news ADD COLUMN IF NOT EXISTS author TEXT;")
+    cur.execute("ALTER TABLE news ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP;")
+
+    # Uploaded images live in Postgres: the API host's disk is ephemeral.
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS media (
+            id SERIAL PRIMARY KEY,
+            content_type TEXT NOT NULL,
+            data BYTEA NOT NULL,
+            size INTEGER NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC')
+        );
+        """
+    )
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS events (
+            id BIGSERIAL PRIMARY KEY,
+            ts TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+            kind TEXT NOT NULL,
+            article_id INTEGER,
+            category TEXT,
+            path TEXT,
+            referrer TEXT,
+            device TEXT,
+            visitor TEXT
+        );
+        """
+    )
+    cur.execute("CREATE INDEX IF NOT EXISTS events_ts_idx ON events (ts);")
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS admin_audit (
+            id BIGSERIAL PRIMARY KEY,
+            ts TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+            action TEXT NOT NULL,
+            article_id INTEGER,
+            detail TEXT,
+            ip TEXT
+        );
+        """
+    )
+
+
 def close_pool() -> None:
     """Tear down the pool (used in tests / shutdown)."""
     global _POOL

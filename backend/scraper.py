@@ -31,7 +31,7 @@ from openai import OpenAI
 import categories as cats
 import fetcher
 from source_policy import has_image_risk, is_blocked_source
-from db import get_cursor
+from db import ensure_newsroom_schema, get_cursor
 from webutil import (
     clean_html_text,
     clean_image_url,
@@ -566,6 +566,7 @@ def clean_ai_text_preserve_lines(text: str) -> str:
         line = raw_line.strip()
 
         if not line:
+        ensure_newsroom_schema(cur)
             continue
 
         line = re.sub(r"^\s*[-•*]\s*", "", line)
