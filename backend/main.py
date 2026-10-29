@@ -6,6 +6,9 @@ Endpoints:
 - GET /news        → latest articles
 - GET /news/{cat}  → articles in a single category (filtered in SQL)
 - GET /search      → ILIKE search across title/summary/source/ai_summary
+- POST /track      → anonymous analytics beacon (see analytics.py)
+- GET /media/{id}  → images uploaded through the admin page
+- /admin/*         → newsroom: write, upload, manage, search, analytics
 """
 
 from __future__ import annotations
@@ -26,10 +29,10 @@ from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
 from categories import VALID_CATEGORIES, resolve
 from db import ensure_newsroom_schema, get_cursor
+from security import limiter
 from source_policy import BANNED_SOURCE_KEYWORDS, has_image_risk, is_blocked_source
 
 load_dotenv()
-from security import limiter
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -99,6 +102,15 @@ async def _security_headers(request: Request, call_next):
     return response
 
 
+# ─── Newsroom + analytics routes ──────────────────────────────
+from admin import admin_router, media_router  # noqa: E402
+from analytics import track_router  # noqa: E402
+
+app.include_router(admin_router)
+app.include_router(media_router)
+app.include_router(track_router)
+
+
 # ─── CORS ──────────────────────────────────────────────────────
 # Browsers reject allow_origins=["*"] together with allow_credentials=True,
 # and "*" is unsafe in production. Require explicit origins.
@@ -109,14 +121,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins or ["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["GET", "OPTIONS"],
-    allow_headers=["*"],
+    # POST/PUT/DELETE are for /track and the bearer-token admin API.
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
-        # get_conn()'s liveness probe (SELECT 1) leaves a transaction open, and
-        # psycopg2 refuses to switch autocommit inside one. Without this
-        # rollback ensure_schema() failed on every boot.
-        conn.rollback()
 
 # ─── Schema ────────────────────────────────────────────────────
 def ensure_schema() -> None:
@@ -129,6 +138,10 @@ def ensure_schema() -> None:
     from db import get_conn
 
     with get_conn() as conn:
+        # get_conn()'s liveness probe (SELECT 1) leaves a transaction open, and
+        # psycopg2 refuses to switch autocommit inside one. Without this
+        # rollback ensure_schema() failed on every boot.
+        conn.rollback()
         conn.autocommit = True
         with conn.cursor() as cur:
             cur.execute(
@@ -138,7 +151,6 @@ def ensure_schema() -> None:
                     source TEXT,
                     title TEXT,
                     title_original TEXT,
-            ensure_newsroom_schema(cur)
                     link TEXT UNIQUE,
                     summary TEXT,
                     ai_summary TEXT,
@@ -151,6 +163,7 @@ def ensure_schema() -> None:
             cur.execute(
                 "ALTER TABLE news ADD COLUMN IF NOT EXISTS title_original TEXT;"
             )
+            ensure_newsroom_schema(cur)
             cur.execute(
                 "CREATE INDEX IF NOT EXISTS news_published_idx "
                 "ON news (published DESC NULLS LAST);"
@@ -196,7 +209,6 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
     image = row["image"] or ""
     if image and has_image_risk(row.get("source")):
         image = ""
-        "is_original": bool(row.get("is_original")),
 
     return {
         "id": row["id"],
@@ -209,6 +221,7 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
         "published": published.isoformat() if published else None,
         "category": category,
         "ai_summary": row.get("ai_summary") or "",
+        "is_original": bool(row.get("is_original")),
     }
 
 
@@ -288,7 +301,7 @@ def _shutdown() -> None:
 def root() -> dict[str, Any]:
     return {
         "message": "Red4ce API is running",
-        "endpoints": ["/news", "/news/{category}", "/search", "/scrape", "/health"],
+        "endpoints": ["/news", "/news/{category}", "/search", "/scrape", "/health", "/track", "/media/{id}"],
     }
 
 
@@ -302,7 +315,6 @@ def health(response: Response) -> dict[str, Any]:
         with get_cursor() as cur:
             cur.execute("SELECT 1;")
             cur.fetchone()
-            "WHERE status = 'published' "
         return {"status": "ok"}
     except Exception as exc:  # noqa: BLE001
         response.status_code = 503
@@ -315,6 +327,7 @@ def get_news(request: Request, limit: int = Query(150, ge=1, le=500)) -> list[di
     with get_cursor(dict_rows=True) as cur:
         cur.execute(
             f"SELECT {_SELECT} FROM news "
+            "WHERE status = 'published' "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
             (limit * _OVERFETCH,),
         )
