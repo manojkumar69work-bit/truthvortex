@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { SafeImage } from "./SafeImage";
 import { todayLabel, getImage, getDirectImage } from "./utils";
@@ -156,6 +157,14 @@ const MobileHeader = memo(function MobileHeader({
           <MobileMenuItem icon="◉" label="Sports" onClick={() => onOpenSection("sports")} />
           <MobileMenuItem icon="!" label="Crime" onClick={() => onOpenSection("crime")} />
           <MobileMenuItem icon="▣" label="Movies" onClick={() => onOpenSection("movies")} />
+          <MobileMenuItem icon="✎" label="Education" onClick={() => onOpenSection("education")} />
+          <Link
+            href="/policy"
+            className="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-3 text-left text-[14px] font-black text-[#071225] hover:text-red-600"
+          >
+            <span className="w-5 text-center text-[18px]">§</span>
+            <span>Policy</span>
+          </Link>
         </div>
       )}
     </header>

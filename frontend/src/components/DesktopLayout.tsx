@@ -47,6 +47,7 @@ export const DesktopLayout = memo(function DesktopLayout({
             tickerArticle={tickerArticle}
             theme={theme}
             onToggleTheme={onToggleTheme}
+            onOpenEducation={() => onOpenSection("education")}
           />
 
           <section className="grid min-h-0 flex-1 grid-cols-[1.55fr_0.7fr_0.9fr] grid-rows-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(180px,1.1fr)]">

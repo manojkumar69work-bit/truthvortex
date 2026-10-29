@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { todayLabel } from "./utils";
 import type { Article, Theme } from "./types";
@@ -10,11 +11,13 @@ export const Header = memo(function Header({
   tickerArticle,
   theme,
   onToggleTheme,
+  onOpenEducation,
 }: {
   mounted: boolean;
   tickerArticle?: Article;
   theme: Theme;
   onToggleTheme: () => void;
+  onOpenEducation: () => void;
 }) {
   return (
     <header className="tv-cell grid h-[76px] shrink-0 grid-cols-[300px_1fr] border-b-[3px] border-double">
@@ -45,6 +48,19 @@ export const Header = memo(function Header({
           <span className="hidden text-xs font-bold text-slate-400 md:block">
             Live Updates
           </span>
+          <button
+            type="button"
+            onClick={onOpenEducation}
+            className="rounded-full border border-slate-300 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#071225] transition hover:border-red-600 hover:text-red-600"
+          >
+            Education
+          </button>
+          <Link
+            href="/policy"
+            className="text-xs font-bold text-slate-400 transition hover:text-red-600"
+          >
+            Policy
+          </Link>
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </section>
