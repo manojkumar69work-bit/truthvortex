@@ -21,6 +21,7 @@ import { DesktopLayout } from "@/components/DesktopLayout";
 import { SectionModal } from "@/components/SectionModal";
 import { ArticleModal } from "@/components/ArticleModal";
 import { TvIntro } from "@/components/TvIntro";
+import { track } from "@/components/track";
 import type { Category, ActiveArticle } from "@/components/types";
 
 export default function Home() {
@@ -54,7 +55,16 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    track({ kind: "pageview" });
   }, []);
+
+  // One article_view per article shown, including Previous/Next and swipes.
+  const viewedId = activeArticle?.article.id;
+  const viewedSection = activeArticle?.section;
+  useEffect(() => {
+    if (viewedId === undefined) return;
+    track({ kind: "article_view", article_id: viewedId, category: viewedSection });
+  }, [viewedId, viewedSection]);
 
   useEffect(() => {
     try {
