@@ -20,7 +20,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
@@ -29,6 +29,7 @@ from db import ensure_newsroom_schema, get_cursor
 from source_policy import BANNED_SOURCE_KEYWORDS, has_image_risk, is_blocked_source
 
 load_dotenv()
+from security import limiter
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -71,32 +72,6 @@ def _start_background_scraper() -> None:
 
 
 # ─── Rate limiting (per-IP, proxy-aware) ────────────────────────────
-def _get_client_ip(request: Request) -> str:
-    """Extract client IP from request, respecting proxy headers.
-
-    Order of precedence:
-    1. X-Forwarded-For (first entry)
-    2. Forwarded (first entry)
-    3. request.client.host (direct connection)
-    """
-    # X-Forwarded-For: client, proxy1, proxy2
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
-
-    # Forwarded: for="[2001:db8::1]"
-    fwd = request.headers.get("forwarded")
-    if fwd:
-        for part in fwd.split(";"):
-            part = part.strip()
-            if part.startswith("for="):
-                return part[4:].strip(' "[]')
-
-    # Fallback to direct connection
-    return request.client.host if request.client else "unknown"
-
-
-limiter = Limiter(key_func=_get_client_ip, default_limits=["120/minute"])
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # slowapi only enforces `default_limits` when this middleware is installed —
