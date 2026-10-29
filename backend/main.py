@@ -221,6 +221,7 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
     image = row["image"] or ""
     if image and has_image_risk(row.get("source")):
         image = ""
+        "is_original": bool(row.get("is_original")),
 
     return {
         "id": row["id"],
@@ -248,7 +249,8 @@ def _allowed_articles(rows: list[dict[str, Any]], limit: int) -> list[dict[str, 
 
 
 _SELECT = (
-    "id, source, title, title_original, link, summary, image, published, category, ai_summary"
+    "id, source, title, title_original, link, summary, image, published, category, "
+    "ai_summary, is_original"
 )
 
 # _allowed_articles drops banned publishers *after* the query returns, so the
@@ -325,6 +327,7 @@ def health(response: Response) -> dict[str, Any]:
         with get_cursor() as cur:
             cur.execute("SELECT 1;")
             cur.fetchone()
+            "WHERE status = 'published' "
         return {"status": "ok"}
     except Exception as exc:  # noqa: BLE001
         response.status_code = 503
@@ -361,7 +364,7 @@ def get_news_by_category(
     with get_cursor(dict_rows=True) as cur:
         cur.execute(
             f"SELECT {_SELECT} FROM news "
-            "WHERE LOWER(category) = %s "
+            "WHERE LOWER(category) = %s AND status = 'published' "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
             (category, limit * _OVERFETCH),
         )
@@ -431,10 +434,11 @@ def search_news(
     with get_cursor(dict_rows=True) as cur:
         cur.execute(
             f"SELECT {_SELECT} FROM news "
-            "WHERE title ILIKE %s "
+            "WHERE status = 'published' AND ("
+            "      title ILIKE %s "
             "   OR summary ILIKE %s "
             "   OR ai_summary ILIKE %s "
-            "   OR source ILIKE %s "
+            "   OR source ILIKE %s) "
             "ORDER BY published DESC NULLS LAST, id DESC LIMIT %s;",
             (like_q, like_q, like_q, like_q, limit * _OVERFETCH),
         )
