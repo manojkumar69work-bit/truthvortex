@@ -54,6 +54,12 @@ services:
         value: nvidia/nemotron-3.5-lightning-30b-a3b
       - key: CORS_ALLOW_ORIGINS
         sync: false   # e.g. https://your-app.vercel.app
+      # Newsroom (/admin). 32+ chars or the admin API stays shut (503).
+      - key: ADMIN_TOKEN
+        sync: false
+      # Keeps daily visitor counts stable across restarts.
+      - key: ANALYTICS_SALT
+        sync: false
       # The cron service below is the single owner of scraping. Without this the
       # API's in-process thread (main.py:_start_background_scraper) ALSO scrapes
       # every 30 min, so both ran concurrently — duplicate LLM spend and doubled
