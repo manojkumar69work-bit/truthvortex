@@ -1678,6 +1678,8 @@ def insert_article(
 
 
 # =========================
+    elif category == "education":
+        category_guidance = "Mention the exam, institution, or recruitment and the key date or deadline."
 # MAIN SCRAPER
 # =========================
 def _scrape_source(source_config: dict) -> tuple[str, list[dict]]:

@@ -13,7 +13,7 @@ import re
 # Categories that the API will accept and that the scraper will produce.
 # Order matters for any UI iteration that respects it.
 VALID_CATEGORIES: frozenset[str] = frozenset(
-    {"breaking", "sports", "business", "movies", "crime"}
+    {"breaking", "sports", "business", "movies", "crime", "education"}
 )
 
 # Sentinel category for content we want to drop (junk/horoscope/recipe/etc.).
@@ -93,6 +93,8 @@ SOURCE_CATEGORY_MAP: dict[str, str] = {
     "indianexpress": "breaking",
     "indian express": "breaking",
     "manatelangana": "breaking",
+    # education
+    "sakshi - education": "education",
 }
 
 
@@ -141,6 +143,10 @@ def normalize(category: str | None) -> str:
     # Crime aliases
     if any(kw in cat for kw in ("crime", "police")):
         return "crime"
+
+    # Education aliases
+    if any(kw in cat for kw in ("education", "exam", "career", "jobs")):
+        return "education"
 
     return DEFAULT_CATEGORY
 
