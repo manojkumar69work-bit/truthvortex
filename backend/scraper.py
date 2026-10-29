@@ -206,8 +206,8 @@ MAX_CONCURRENT_SOURCES = int(os.getenv("MAX_CONCURRENT_SOURCES", "1"))
 # Articles older than this are deleted at the start of every scrape cycle, and
 # feed entries already older than this are never ingested. 0 disables purging.
 ARTICLE_RETENTION_DAYS = int(os.getenv("ARTICLE_RETENTION_DAYS", "2"))
-
 ANALYTICS_RETENTION_DAYS = int(os.getenv("ANALYTICS_RETENTION_DAYS", "90"))
+
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "12"))
 PAGE_IMAGE_TIMEOUT = int(os.getenv("PAGE_IMAGE_TIMEOUT", "6"))
 ARTICLE_TEXT_TIMEOUT = int(os.getenv("ARTICLE_TEXT_TIMEOUT", "10"))
@@ -464,6 +464,70 @@ SOURCES = [
         "category": "breaking",
         "type": "rss",
     },
+
+    # ============================================================
+    # Telugu dailies. Text only: all three are on the image-risk list
+    # in source_policy.py, so their photos are dropped for the
+    # placeholder. Sakshi's /rss/<section>.xml feeds are not linked
+    # from the site; unknown section names redirect to the homepage
+    # with a 200, so a typo here shows up as "0 entries", not an error.
+    # ============================================================
+    {
+        "name": "Sakshi - Andhra Pradesh",
+        "url": "https://www.sakshi.com/rss/andhra-pradesh.xml",
+        "category": "breaking",
+        "type": "rss",
+    },
+    {
+        "name": "Sakshi - Movies",
+        "url": "https://www.sakshi.com/rss/movies.xml",
+        "category": "movies",
+        "type": "rss",
+    },
+    {
+        "name": "Sakshi - Education",
+        "url": "https://education.sakshi.com/rss/edunews.rss",
+        "category": "education",
+        "type": "rss",
+    },
+    # Eenadu and Andhra Jyothy publish no RSS. Their Google News sitemaps
+    # carry a title and publication date per URL, which their section pages
+    # don't, so the retention window still applies. Entries are picked by
+    # URL path or by the sitemap's <news:keywords>.
+    {
+        "name": "Eenadu - Crime",
+        "url": "https://www.eenadu.net/sitemap-news.xml",
+        "category": "crime",
+        "type": "sitemap",
+        "path_contains": ["/telugu-news/crime/"],
+        "keyword_contains": ["crime"],
+    },
+    {
+        "name": "Eenadu - Latest",
+        "url": "https://www.eenadu.net/sitemap-news.xml",
+        "category": "breaking",
+        "type": "sitemap",
+        "path_contains": [
+            "/telugu-news/andhra-pradesh/",
+            "/telugu-news/telangana/",
+            "/telugu-news/india/",
+        ],
+    },
+    {
+        "name": "Andhra Jyothy - Crime",
+        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
+        "category": "crime",
+        "type": "sitemap",
+        "path_contains": ["crime"],
+        "keyword_contains": ["crime"],
+    },
+    {
+        "name": "Andhra Jyothy - Latest",
+        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
+        "category": "breaking",
+        "type": "sitemap",
+        "path_contains": ["/andhra-pradesh/", "/telangana/", "/national/"],
+    },
 ]
 
 SOURCES = [
@@ -502,6 +566,7 @@ def ensure_table():
         cur.execute(
             "ALTER TABLE news ADD COLUMN IF NOT EXISTS title_original TEXT;"
         )
+        ensure_newsroom_schema(cur)
     log("Database table ready.")
 
 
@@ -528,6 +593,13 @@ def purge_old_articles(days: int = None) -> int:
             (days,),
         )
         deleted = cur.rowcount or 0
+        # Analytics rows have their own, longer window.
+        if ANALYTICS_RETENTION_DAYS > 0:
+            cur.execute(
+                "DELETE FROM events "
+                "WHERE ts < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
+                (ANALYTICS_RETENTION_DAYS,),
+            )
 
     log(f"Retention purge: deleted {deleted} article(s) older than {days} day(s).")
     return deleted
@@ -572,7 +644,6 @@ def clean_ai_text_preserve_lines(text: str) -> str:
         line = raw_line.strip()
 
         if not line:
-        ensure_newsroom_schema(cur)
             continue
 
         line = re.sub(r"^\s*[-•*]\s*", "", line)
@@ -594,13 +665,6 @@ def safe_translate(text: str) -> str:
         return translated if translated else text
     except Exception as e:
         log(f"    [Translation Error] {e}")
-        # Analytics rows have their own, longer window.
-        if ANALYTICS_RETENTION_DAYS > 0:
-            cur.execute(
-                "DELETE FROM events "
-                "WHERE ts < (NOW() AT TIME ZONE 'UTC') - make_interval(days => %s);",
-                (ANALYTICS_RETENTION_DAYS,),
-            )
         return text
 
 
@@ -1162,70 +1226,6 @@ def scrape_page_source(source_config: dict) -> list[dict]:
     return candidates[:MAX_ENTRIES_PER_SOURCE]
 
 
-# =========================
-# AI SUMMARY - IMPROVED PROMPTS & QUALITY
-# =========================
-
-_SENTENCE_END = re.compile(r"[.?!।]$")
-
-
-def normalize_ai_summary(text: str) -> str:
-    lines = [l.strip() for l in (text or "").split("\n") if l.strip()]
-    if not lines:
-        return ""
-    # If the model returned one flowing paragraph instead of one sentence per
-    # line, split it on sentence boundaries so the 5-8 "line" check reflects the
-    # sentence count (otherwise a perfectly good paragraph is rejected as 1 line).
-    if len(lines) == 1:
-        parts = [p.strip() for p in re.split(r"(?<=[.?!।])\s+", lines[0]) if p.strip()]
-        if len(parts) >= MIN_AI_SUMMARY_LINES:
-            lines = parts
-    lines = lines[:MAX_AI_SUMMARY_LINES]
-    # If the last line doesn't end with sentence-ending punctuation, it may be
-    # truncated — drop it only when we still have at least MIN_AI_SUMMARY_LINES
-    # remaining so we never go below the required floor.
-    if (
-        len(lines) > MIN_AI_SUMMARY_LINES
-        and not _SENTENCE_END.search(lines[-1])
-    ):
-        lines = lines[:-1]
-    return "\n".join(lines).strip()
-
-
-def ai_summary_line_count(text: str) -> int:
-    return len([line for line in (text or "").split("\n") if line.strip()])
-
-
-
-def _summary_prompt_lang() -> str:
-    """All generated summaries must be Telugu-only."""
-    return SUMMARY_LANGUAGE
-
-
-def build_ai_prompt(title: str, article_text: str, category: str = "breaking") -> str:
-    lang = SUMMARY_LANGUAGE
-    script_hint = "Telugu script only"
-    return f"""
-You MUST rewrite the news headline and summary in Telugu only.
-
-CRITICAL - STRICT LENGTH RULE - DO NOT VIOLATE:
-The summary MUST have EXACTLY 5 to 8 lines. NO MORE. NO LESS.
-Count your lines before outputting. Each line is ONE complete sentence.
-
-FORMAT:
-HEADLINE: (one short {lang} line)
-SUMMARY:
-line 1 of summary
-line 2 of summary
-...
-(line 5 to line 8 max)
-
-RULES:
-- EVERY line must be in {script_hint}.
-- Do NOT use English words, Latin letters, Hinglish, Hindi, or transliteration.
-- The HEADLINE must also be rewritten/summarized in Telugu, not copied from the source.
-- One sentence per line. No empty lines.
-- Only facts from the article. No opinions.
 _SITEMAP_NS = {
     "sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
     "news": "http://www.google.com/schemas/sitemap-news/0.9",
@@ -1316,6 +1316,70 @@ def scrape_sitemap_source(source_config: dict) -> list[dict]:
     return entries[:MAX_ENTRIES_PER_SOURCE]
 
 
+# =========================
+# AI SUMMARY - IMPROVED PROMPTS & QUALITY
+# =========================
+
+_SENTENCE_END = re.compile(r"[.?!।]$")
+
+
+def normalize_ai_summary(text: str) -> str:
+    lines = [l.strip() for l in (text or "").split("\n") if l.strip()]
+    if not lines:
+        return ""
+    # If the model returned one flowing paragraph instead of one sentence per
+    # line, split it on sentence boundaries so the 5-8 "line" check reflects the
+    # sentence count (otherwise a perfectly good paragraph is rejected as 1 line).
+    if len(lines) == 1:
+        parts = [p.strip() for p in re.split(r"(?<=[.?!।])\s+", lines[0]) if p.strip()]
+        if len(parts) >= MIN_AI_SUMMARY_LINES:
+            lines = parts
+    lines = lines[:MAX_AI_SUMMARY_LINES]
+    # If the last line doesn't end with sentence-ending punctuation, it may be
+    # truncated — drop it only when we still have at least MIN_AI_SUMMARY_LINES
+    # remaining so we never go below the required floor.
+    if (
+        len(lines) > MIN_AI_SUMMARY_LINES
+        and not _SENTENCE_END.search(lines[-1])
+    ):
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
+def ai_summary_line_count(text: str) -> int:
+    return len([line for line in (text or "").split("\n") if line.strip()])
+
+
+
+def _summary_prompt_lang() -> str:
+    """All generated summaries must be Telugu-only."""
+    return SUMMARY_LANGUAGE
+
+
+def build_ai_prompt(title: str, article_text: str, category: str = "breaking") -> str:
+    lang = SUMMARY_LANGUAGE
+    script_hint = "Telugu script only"
+    return f"""
+You MUST rewrite the news headline and summary in Telugu only.
+
+CRITICAL - STRICT LENGTH RULE - DO NOT VIOLATE:
+The summary MUST have EXACTLY 5 to 8 lines. NO MORE. NO LESS.
+Count your lines before outputting. Each line is ONE complete sentence.
+
+FORMAT:
+HEADLINE: (one short {lang} line)
+SUMMARY:
+line 1 of summary
+line 2 of summary
+...
+(line 5 to line 8 max)
+
+RULES:
+- EVERY line must be in {script_hint}.
+- Do NOT use English words, Latin letters, Hinglish, Hindi, or transliteration.
+- The HEADLINE must also be rewritten/summarized in Telugu, not copied from the source.
+- One sentence per line. No empty lines.
+- Only facts from the article. No opinions.
 - No bullets, numbers, headings, or extra text.
 
 TITLE: {title}
@@ -1614,6 +1678,8 @@ def build_headline_prompt(title: str, article_text: str, category: str) -> str:
         category_guidance = "Mention the incident, place, and people involved."
     elif category == "breaking":
         category_guidance = "Focus on the event, place, and key people."
+    elif category == "education":
+        category_guidance = "Mention the exam, institution, or recruitment and the key date or deadline."
 
     # Trim article text so we don't blow up the prompt.
     article_excerpt = (article_text or "")[:2000]
@@ -1769,8 +1835,6 @@ def insert_article(
 
 
 # =========================
-    elif category == "education":
-        category_guidance = "Mention the exam, institution, or recruitment and the key date or deadline."
 # MAIN SCRAPER
 # =========================
 def _scrape_source(source_config: dict) -> tuple[str, list[dict]]:
@@ -1782,6 +1846,8 @@ def _scrape_source(source_config: dict) -> tuple[str, list[dict]]:
             return name, scrape_rss_source(source_config)
         if stype == "page":
             return name, scrape_page_source(source_config)
+        if stype == "sitemap":
+            return name, scrape_sitemap_source(source_config)
         log(f"  ✗ Unknown source type: {stype}")
         return name, []
     except Exception as exc:  # noqa: BLE001
@@ -1846,8 +1912,6 @@ def _process_article(
     if is_duplicate_title(title, existing_titles_set):
         total_seen["dup"] += 1
         log("    Skipped: duplicate title")
-        if stype == "sitemap":
-            return name, scrape_sitemap_source(source_config)
         return None
 
     if is_bad_placeholder_summary(title) or is_bad_placeholder_summary(desc):

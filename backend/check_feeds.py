@@ -30,6 +30,9 @@ import feedparser
 import requests
 
 MIN_PER_CATEGORY = int(os.getenv("MIN_PER_CATEGORY", "3"))
+# Education has a single publisher (Sakshi's education site); requiring three
+# live feeds there would fail the daily check by construction.
+MIN_OVERRIDES = {"education": 1}
 TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "12"))
 MAX_WORKERS = int(os.getenv("CHECK_WORKERS", "8"))
 USER_AGENT = (
@@ -95,7 +98,8 @@ def main() -> int:
     for category in sorted(by_cat):
         rows = by_cat[category]
         live = [r for r in rows if r["ok"]]
-        flag = "" if len(live) >= MIN_PER_CATEGORY else "  <-- BELOW MINIMUM"
+        minimum = min(MIN_PER_CATEGORY, MIN_OVERRIDES.get(category, MIN_PER_CATEGORY))
+        flag = "" if len(live) >= minimum else "  <-- BELOW MINIMUM"
         print(f"== {category.upper()} : {len(live)}/{len(rows)} live{flag}")
         for r in rows:
             mark = "OK " if r["ok"] else "XX "
@@ -103,7 +107,7 @@ def main() -> int:
             print(f"   {mark} {r['name']:<34} {detail}")
             if not r["ok"]:
                 print(f"        {r['url']}")
-        if len(live) < MIN_PER_CATEGORY:
+        if len(live) < minimum:
             failing_categories.append(category)
         print()
 

@@ -56,6 +56,7 @@ IMAGE_RISK_SOURCE_KEYWORDS = (
     "deadline",
     "economic times",
     "economictimes",
+    "eenadu",
     "espn",
     "filmibeat",
     "filmyfocus",
