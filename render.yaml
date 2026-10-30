@@ -1,5 +1,6 @@
 # ─── Render blueprint for Red4ce ──────────────────────────────────────
-# Deploys: managed Postgres + FastAPI web service + scheduled scraper cron.
+# Deploys: managed Postgres + FastAPI web service. The scraper runs on GitHub
+# Actions (.github/workflows/scrape.yml), not here: Render has no free cron.
 # Frontend (Next.js) is deployed separately on Vercel — see README.
 #
 # After first deploy, set the secret/env values marked `sync: false` in the
@@ -60,72 +61,11 @@ services:
       # Keeps daily visitor counts stable across restarts.
       - key: ANALYTICS_SALT
         sync: false
-      # The cron service below is the single owner of scraping. Without this the
-      # API's in-process thread (main.py:_start_background_scraper) ALSO scrapes
-      # every 30 min, so both ran concurrently — duplicate LLM spend and doubled
-      # rate-limit pressure. The cron is the right owner because a free-plan web
-      # service spins down when idle, which silently stops the thread's schedule.
+      # The GitHub Actions workflow (.github/workflows/scrape.yml) is the single
+      # owner of scraping. Without this the API's in-process thread
+      # (main.py:_start_background_scraper) ALSO scrapes, so both run at once —
+      # duplicate LLM spend and doubled rate-limit pressure. The thread is the
+      # wrong owner anyway: a free-plan web service spins down when idle, which
+      # kills a cycle midway.
       - key: DISABLE_BACKGROUND_SCRAPER
         value: "true"
-
-  # ─── Scraper (runs every 30 min) ─────────────────────────────────────────
-  - type: cron
-    name: truthvortex-scraper
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: ./backend
-    schedule: "*/30 * * * *"
-    dockerCommand: python scraper.py
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: truthvortex-db
-          property: connectionString
-      # Groq leads the chain: the OpenRouter free tier now answers 429 on almost
-      # every call, and Groq's gpt-oss-120b returns clean Telugu in ~1s. The
-      # chain still falls back to OpenRouter, then NVIDIA, when Groq throttles.
-      - key: AI_PROVIDER
-        value: groq
-      - key: OPENROUTER_API_KEY
-        sync: false
-      - key: OPENROUTER_API_KEY_2
-        sync: false
-      - key: OPENROUTER_MODEL
-        value: google/gemma-4-26b-a4b-it:free
-      - key: GROQ_API_KEY
-        sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: NVIDIA_API_KEY
-        sync: false
-      # Pin the models. The previous defaults both died in Aug 2026 --
-      # nvidia/llama-3.3-nemotron-super-49b-v1.5 hit EOL on 2026-08-26 (410) and
-      # meta-llama/llama-4-scout-17b-16e-instruct left Groq's catalogue (404) --
-      # which silently emptied the site of AI summaries.
-      - key: GROQ_MODEL
-        value: openai/gpt-oss-120b
-      # Last resort only: this account's NVIDIA tier exposes just the nemotron-3.x
-      # reasoning models, which take 35-47s and leak their thinking trace into the
-      # summary text. Fine as a backstop, wrong as a primary.
-      - key: NVIDIA_MODEL
-        value: nvidia/nemotron-3.5-lightning-30b-a3b
-      - key: SAFE_IMAGES_ONLY
-        value: "false"
-      - key: MAX_CONCURRENT_SOURCES
-        value: "5"
-      - key: MAX_ENTRIES_PER_SOURCE
-        value: "6"
-      # Minimum gap between two requests to the same publisher host. Needed now
-      # that feeds are fetched from a thread pool — without it one publisher can
-      # be hit several ways at once.
-      - key: PER_DOMAIN_DELAY_SECONDS
-        value: "0.5"
-      # Retry a bot-walled fetch (403/429/503 from Cloudflare/Akamai) once with a
-      # real browser TLS fingerprint. ESPNcricinfo's Akamai rejects the plain
-      # python-requests fingerprint regardless of headers, so without this its
-      # article pages always 403 and the AI only ever sees the RSS blurb.
-      - key: ENABLE_IMPERSONATE_FALLBACK
-        value: "true"
-      # Every cycle deletes articles older than this many days.
-      - key: ARTICLE_RETENTION_DAYS
-        value: "2"

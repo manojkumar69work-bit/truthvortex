@@ -4,7 +4,7 @@
 
 Most Telugu news sites are ad-heavy walls of text. Red4ce pulls 25 feeds (RSS plus Eenadu and Andhra Jyothy news sitemaps) across 6 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
 
-**🔗 [truthvortex-sigma.vercel.app](https://truthvortex-sigma.vercel.app)** · FastAPI + Postgres + Next.js 15 · live
+**🔗 [red4ce.com](https://red4ce.com)** · FastAPI + Postgres + Next.js 15 · live
 
 <!-- TODO: add a screenshot here — the TV-style dashboard is the whole pitch and
      a reader can't see it from prose. ![Red4ce dashboard](docs/screenshot.png) -->
@@ -36,7 +36,7 @@ Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, st
 ## Architecture
 
 ```
-25 feeds (RSS + sitemaps)    Cron scraper (every 30 min)
+25 feeds (RSS + sitemaps)    Scraper (GitHub Actions, every 30 min)
       │                              │
       └──────────────────────────────┤ fuzzy dedupe
                                      │ AI summarize (5-provider fallback)
@@ -56,11 +56,13 @@ Hardening: per-IP rate limiting, CSP and security headers, parameterized SQL, st
 | [`backend/source_policy.py`](backend/source_policy.py) | Per-source rules and image-copyright policy |
 | [`backend/fetcher.py`](backend/fetcher.py) | The one HTTP door: per-host throttle, bot-wall retry with a real browser TLS fingerprint |
 | [`backend/db.py`](backend/db.py) | Connection-pool lifecycle (retention pruning lives in `scraper.py`) |
-| [`.github/workflows/`](.github/workflows) | `unit-tests` on every push, `feed-liveness` daily |
+| [`.github/workflows/`](.github/workflows) | `scrape` every 30 min, `unit-tests` on every push, `feed-liveness` daily |
 
-Scraping is owned by the **cron service**, not the API. `main.py` still contains an
-in-process scraper thread, but every deployment sets `DISABLE_BACKGROUND_SCRAPER=true`
-so the two can't scrape concurrently and double the LLM spend.
+Scraping is owned by the **`scrape` GitHub Actions workflow**, not the API. Render has
+no free cron jobs, and the API's in-process scraper thread dies whenever the free
+instance sleeps. Set `DISABLE_BACKGROUND_SCRAPER=true` on the API so the two can't
+scrape concurrently and double the LLM spend. The workflow reads `DATABASE_URL` (Render's
+External Database URL) and the AI provider keys from repo secrets.
 
 ---
 
@@ -82,13 +84,13 @@ Red4ce/
 
 | Component | URL |
 |-----------|-----|
-| **Frontend** | https://truthvortex-sigma.vercel.app |
+| **Frontend** | https://red4ce.com |
 | **API** | https://truthvortex-api.onrender.com |
 | **Database** | Render Postgres (managed) |
 
 ## How it works
 
-1. **Scrape** — A cron service fetches 25 curated sources across 6 categories:
+1. **Scrape** — A GitHub Actions workflow fetches 25 curated sources across 6 categories:
    Breaking, Business, Sports, Movies, Crime, Education. Telugu dailies: Sakshi
    (Andhra Pradesh, Movies, Education RSS), Eenadu and Andhra Jyothy (Crime and
    Latest, read from their Google News sitemaps since neither publishes RSS).
@@ -181,8 +183,8 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 | `GEMINI_API_KEY` | No | Last-resort fallback; ignored unless it starts with `AIza` |
 | `AI_PROVIDER` | No | `openrouter` (default) — promotes one provider to the front of the chain |
 | `CORS_ALLOW_ORIGINS` | No | Comma-separated origins; defaults to `http://localhost:3000` |
-| `DISABLE_BACKGROUND_SCRAPER` | **Yes, on the API** | `true` — without it the API scrapes alongside the cron |
-| `MAX_CONCURRENT_SOURCES` | No | `1` (default), `5` in the deployed cron |
+| `DISABLE_BACKGROUND_SCRAPER` | **Yes, on the API** | `true` — without it the API scrapes alongside the workflow |
+| `MAX_CONCURRENT_SOURCES` | No | `1` (default), `5` in the scrape workflow |
 | `MAX_ENTRIES_PER_SOURCE` | No | `6` (default) |
 | `PER_DOMAIN_DELAY_SECONDS` | No | `0` (default), `0.5` deployed — min gap between hits on one publisher |
 | `ENABLE_IMPERSONATE_FALLBACK` | No | Retry a bot-walled fetch once with a browser TLS fingerprint |
@@ -220,7 +222,7 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 
 - **Telugu AI summaries** (5–8 lines) direct from LLM
 - **Multi-provider fallback** (OpenRouter → OpenRouter2 → NVIDIA → Groq → Gemini) for reliability
-- **Cron scraper** runs every 30 minutes
+- **Scraper** runs every 30 minutes on GitHub Actions
 - **2-day retention** — each cycle deletes articles older than
   `ARTICLE_RETENTION_DAYS` (2) and skips feed entries already that old
 - **Light/dark theme toggle**, persisted to `localStorage`, respects OS preference

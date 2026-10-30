@@ -45,10 +45,13 @@ ALLOWED_SOURCE_NAMES = {
 # Substring matches for publishers whose feeds commonly include publisher-owned,
 # logo-stamped, or syndicated imagery. Matching here means "strip/skip the
 # image", NOT "reject the article".
+#
+# Eenadu, Sakshi and Andhra Jyothy were removed on 2026-10-30: their feed
+# photos carry no watermarks, so the owner chose to show them with a source
+# credit rather than the placeholder.
 IMAGE_RISK_SOURCE_KEYWORDS = (
     "10tv",
     "123telugu",
-    "andhra jyothy",
     "bollywood hungama",
     "businessline",
     "cnbc",
@@ -56,7 +59,6 @@ IMAGE_RISK_SOURCE_KEYWORDS = (
     "deadline",
     "economic times",
     "economictimes",
-    "eenadu",
     "espn",
     "filmibeat",
     "filmyfocus",
@@ -73,7 +75,6 @@ IMAGE_RISK_SOURCE_KEYWORDS = (
     "ndtv",
     "ntv",
     "oneindia",
-    "sakshi",
     "screen rant",
     "sportstar",
     "telugu bulletin",

@@ -271,9 +271,12 @@ AI_CLIENTS: dict[str, OpenAI | None] = {}
 
 for p in PROVIDERS:
     try:
+        # max_retries=0: retries are handled in the call loop below. The
+        # client's own default (2) silently tripled every 30s timeout.
         AI_CLIENTS[p["name"]] = OpenAI(
             base_url=p["base_url"],
             api_key=p["api_key"],
+            max_retries=0,
         )
         log(f"  ✓ Client created: {p['name']} ({p['model']})")
     except Exception as e:
@@ -337,6 +340,68 @@ SAFE_IMAGES_ONLY = os.getenv("SAFE_IMAGES_ONLY", "false").lower() == "true"
 # SOURCES
 # =========================
 SOURCES = [
+    # ============================================================
+    # Telugu dailies. First in the list so a cycle that is cut short
+    # still reaches them. Sakshi's /rss/<section>.xml feeds are not linked
+    # from the site; unknown section names redirect to the homepage
+    # with a 200, so a typo here shows up as "0 entries", not an error.
+    # ============================================================
+    {
+        "name": "Sakshi - Andhra Pradesh",
+        "url": "https://www.sakshi.com/rss/andhra-pradesh.xml",
+        "category": "breaking",
+        "type": "rss",
+    },
+    {
+        "name": "Sakshi - Movies",
+        "url": "https://www.sakshi.com/rss/movies.xml",
+        "category": "movies",
+        "type": "rss",
+    },
+    {
+        "name": "Sakshi - Education",
+        "url": "https://education.sakshi.com/rss/edunews.rss",
+        "category": "education",
+        "type": "rss",
+    },
+    # Eenadu and Andhra Jyothy publish no RSS. Their Google News sitemaps
+    # carry a title and publication date per URL, which their section pages
+    # don't, so the retention window still applies. Entries are picked by
+    # URL path or by the sitemap's <news:keywords>.
+    {
+        "name": "Eenadu - Crime",
+        "url": "https://www.eenadu.net/sitemap-news.xml",
+        "category": "crime",
+        "type": "sitemap",
+        "path_contains": ["/telugu-news/crime/"],
+        "keyword_contains": ["crime"],
+    },
+    {
+        "name": "Eenadu - Latest",
+        "url": "https://www.eenadu.net/sitemap-news.xml",
+        "category": "breaking",
+        "type": "sitemap",
+        "path_contains": [
+            "/telugu-news/andhra-pradesh/",
+            "/telugu-news/telangana/",
+            "/telugu-news/india/",
+        ],
+    },
+    {
+        "name": "Andhra Jyothy - Crime",
+        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
+        "category": "crime",
+        "type": "sitemap",
+        "path_contains": ["crime"],
+        "keyword_contains": ["crime"],
+    },
+    {
+        "name": "Andhra Jyothy - Latest",
+        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
+        "category": "breaking",
+        "type": "sitemap",
+        "path_contains": ["/andhra-pradesh/", "/telangana/", "/national/"],
+    },
     # ============================================================
     # Copyright-safe / Clean image sources
     # ============================================================
@@ -465,69 +530,6 @@ SOURCES = [
         "type": "rss",
     },
 
-    # ============================================================
-    # Telugu dailies. Text only: all three are on the image-risk list
-    # in source_policy.py, so their photos are dropped for the
-    # placeholder. Sakshi's /rss/<section>.xml feeds are not linked
-    # from the site; unknown section names redirect to the homepage
-    # with a 200, so a typo here shows up as "0 entries", not an error.
-    # ============================================================
-    {
-        "name": "Sakshi - Andhra Pradesh",
-        "url": "https://www.sakshi.com/rss/andhra-pradesh.xml",
-        "category": "breaking",
-        "type": "rss",
-    },
-    {
-        "name": "Sakshi - Movies",
-        "url": "https://www.sakshi.com/rss/movies.xml",
-        "category": "movies",
-        "type": "rss",
-    },
-    {
-        "name": "Sakshi - Education",
-        "url": "https://education.sakshi.com/rss/edunews.rss",
-        "category": "education",
-        "type": "rss",
-    },
-    # Eenadu and Andhra Jyothy publish no RSS. Their Google News sitemaps
-    # carry a title and publication date per URL, which their section pages
-    # don't, so the retention window still applies. Entries are picked by
-    # URL path or by the sitemap's <news:keywords>.
-    {
-        "name": "Eenadu - Crime",
-        "url": "https://www.eenadu.net/sitemap-news.xml",
-        "category": "crime",
-        "type": "sitemap",
-        "path_contains": ["/telugu-news/crime/"],
-        "keyword_contains": ["crime"],
-    },
-    {
-        "name": "Eenadu - Latest",
-        "url": "https://www.eenadu.net/sitemap-news.xml",
-        "category": "breaking",
-        "type": "sitemap",
-        "path_contains": [
-            "/telugu-news/andhra-pradesh/",
-            "/telugu-news/telangana/",
-            "/telugu-news/india/",
-        ],
-    },
-    {
-        "name": "Andhra Jyothy - Crime",
-        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
-        "category": "crime",
-        "type": "sitemap",
-        "path_contains": ["crime"],
-        "keyword_contains": ["crime"],
-    },
-    {
-        "name": "Andhra Jyothy - Latest",
-        "url": "https://www.andhrajyothy.com/sitemaps/news-sitemap.xml",
-        "category": "breaking",
-        "type": "sitemap",
-        "path_contains": ["/andhra-pradesh/", "/telangana/", "/national/"],
-    },
 ]
 
 SOURCES = [
@@ -1461,6 +1463,9 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
                              or "end of life" in error_msg or "no longer available" in error_msg
                              or "decommissioned" in error_msg)
             is_auth_error = "401" in error_msg or "403" in error_msg or "unauthorized" in error_msg or "api key" in error_msg
+            # A provider that just spent 30s timing out will most likely do it
+            # again, and every retry stalls the whole cycle. Move on instead.
+            is_timeout = "timed out" in error_msg or "timeout" in error_msg
 
             # A transient rate limit shouldn't permanently burn a provider.
             # Back off and retry the SAME provider a couple of times first;
@@ -1472,9 +1477,11 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
                 time.sleep(wait)
                 continue
 
-            if is_rate_limit or is_auth_error or is_model_gone:
+            if is_rate_limit or is_auth_error or is_model_gone or is_timeout:
                 if is_rate_limit:
                     reason = "rate limited"
+                elif is_timeout:
+                    reason = "timed out"
                 elif is_model_gone:
                     reason = f"model unavailable ({AI_MODEL})"
                 else:

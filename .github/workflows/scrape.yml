@@ -1,0 +1,59 @@
+name: scrape
+
+# The scraper's only scheduler. Render has no free cron jobs, and the API's
+# in-process thread died whenever the free instance slept, so no cycle finished
+# between 2026-10-25 and 2026-10-30. Actions minutes are free on a public repo.
+
+on:
+  schedule:
+    # Off the hour: GitHub's shared cron pool is oversubscribed at :00/:30.
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+# Never run two cycles at once: they would race on the same inserts and double
+# the LLM spend. A run that is still going makes the next one wait.
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches backend/Dockerfile (python:3.13-slim).
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install deps
+        run: pip install -r backend/requirements.txt
+
+      - name: Run one scrape cycle
+        working-directory: backend
+        run: python scraper.py
+        env:
+          # Render's *External* Database URL, not the internal one.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Groq leads the chain: the OpenRouter free tier answers 429 on almost
+          # every call, and Groq's gpt-oss-120b returns clean Telugu in ~1s.
+          AI_PROVIDER: groq
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: openai/gpt-oss-120b
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_API_KEY_2: ${{ secrets.OPENROUTER_API_KEY_2 }}
+          OPENROUTER_MODEL: google/gemma-4-26b-a4b-it:free
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_MODEL: nvidia/nemotron-3.5-lightning-30b-a3b
+          SAFE_IMAGES_ONLY: "false"
+          MAX_CONCURRENT_SOURCES: "5"
+          MAX_ENTRIES_PER_SOURCE: "6"
+          PER_DOMAIN_DELAY_SECONDS: "0.5"
+          ENABLE_IMPERSONATE_FALLBACK: "true"
+          ARTICLE_RETENTION_DAYS: "2"
