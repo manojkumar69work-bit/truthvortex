@@ -42,7 +42,7 @@ export const BusinessCard = memo(function BusinessCard({
           ))}
         </div>
       ) : (
-        <EmptyText text="AI summarized business headlines will appear here." />
+        <EmptyText text="Business headlines will appear here." />
       )}
     </CardShell>
   );

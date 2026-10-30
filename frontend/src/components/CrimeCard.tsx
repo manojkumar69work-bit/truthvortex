@@ -37,7 +37,7 @@ export const CrimeCard = memo(function CrimeCard({
           </div>
         </button>
       ) : (
-        <EmptyText text="AI summarized crime article will appear here." />
+        <EmptyText text="Crime news will appear here." />
       )}
     </CardShell>
   );

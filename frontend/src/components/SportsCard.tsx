@@ -42,7 +42,7 @@ export const SportsCard = memo(function SportsCard({
           ))}
         </div>
       ) : (
-        <EmptyText text="AI summarized sports headlines will appear here." />
+        <EmptyText text="Sports headlines will appear here." />
       )}
     </CardShell>
   );

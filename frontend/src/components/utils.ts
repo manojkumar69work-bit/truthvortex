@@ -66,8 +66,8 @@ export function hasBadPlaceholder(text?: string | null) {
   return badPhrases.some((phrase) => lower.includes(phrase));
 }
 
-export function hasValidAiSummary(article: Article) {
-  const text = article.ai_summary?.trim();
+export function hasValidSummary(article: Article) {
+  const text = article.body?.trim();
 
   if (!text) return false;
   if (text.length < 40) return false;
@@ -78,7 +78,7 @@ export function hasValidAiSummary(article: Article) {
 }
 
 export function getText(article?: Article | null) {
-  return article?.ai_summary?.trim() || article?.summary?.trim() || "";
+  return article?.body?.trim() || article?.summary?.trim() || "";
 }
 
 // Images uploaded in the admin newsroom are stored as "/media/<id>" on the API.

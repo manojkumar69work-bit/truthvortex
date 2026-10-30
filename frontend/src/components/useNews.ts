@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { API_URL, REFRESH_MS } from "./constants";
-import { normalizeCategory, hasValidAiSummary } from "./utils";
+import { normalizeCategory, hasValidSummary } from "./utils";
 import type { Article, Category } from "./types";
 
 export function useNews() {
@@ -97,7 +97,7 @@ export function useNews() {
     return result;
   }, [articles]);
 
-  // Only articles with a usable AI summary can actually be opened —
+  // Only articles with a usable summary can actually be opened —
   // openArticle() refuses the rest. The layouts were being handed the
   // *unfiltered* lists, so a card could render an article that did nothing
   // when clicked. Display and click have to come from the same list.
@@ -112,7 +112,7 @@ export function useNews() {
     };
 
     for (const category of Object.keys(result) as Category[]) {
-      result[category] = grouped[category].filter(hasValidAiSummary);
+      result[category] = grouped[category].filter(hasValidSummary);
     }
 
     return result;

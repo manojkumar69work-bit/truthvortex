@@ -201,7 +201,7 @@ const MobileTicker = memo(function MobileTicker({ article }: { article?: Article
     <section className="mt-5 flex h-[42px] items-center gap-3 overflow-hidden rounded-xl border border-slate-100 bg-white px-3 shadow-[0_8px_24px_rgba(15,23,42,0.07)]">
       <span className="blink-dot h-2.5 w-2.5 shrink-0 rounded-full bg-red-600" />
       <p className="font-news-headline line-clamp-1 min-w-0 text-[13px] leading-[1.35] text-[#071225]">
-        {article?.title || "AI summarized headlines will appear here."}
+        {article?.title || "Headlines will appear here."}
       </p>
     </section>
   );
@@ -244,7 +244,7 @@ const MobileBreakingCard = memo(function MobileBreakingCard({
           </div>
         </button>
       ) : (
-        <MobileEmpty text="AI summarized breaking news will appear here." />
+        <MobileEmpty text="Breaking news will appear here." />
       )}
     </section>
   );
@@ -315,7 +315,7 @@ const MobileBusinessSection = memo(function MobileBusinessSection({
           ))}
         </div>
       ) : (
-        <MobileEmpty text="AI summarized business headlines will appear here." />
+        <MobileEmpty text="Business headlines will appear here." />
       )}
     </section>
   );
@@ -364,7 +364,7 @@ const MobileListSection = memo(function MobileListSection({
           ))}
         </div>
       ) : (
-        <MobileEmpty text={`AI summarized ${title} headlines will appear here.`} />
+        <MobileEmpty text={`Latest ${title} headlines will appear here.`} />
       )}
     </section>
   );
@@ -408,7 +408,7 @@ const MobileCompactSection = memo(function MobileCompactSection({
           </div>
         </button>
       ) : (
-        <MobileEmpty text={`AI summarized ${title} article will appear here.`} />
+        <MobileEmpty text={`Latest ${title} article will appear here.`} />
       )}
     </section>
   );

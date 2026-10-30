@@ -220,7 +220,7 @@ def _row_to_article(row: dict[str, Any]) -> dict[str, Any]:
         "image": image,
         "published": published.isoformat() if published else None,
         "category": category,
-        "ai_summary": row.get("ai_summary") or "",
+        "body": row.get("ai_summary") or "",
         "is_original": bool(row.get("is_original")),
     }
 

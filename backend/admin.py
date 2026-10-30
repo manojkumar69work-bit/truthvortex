@@ -97,7 +97,7 @@ def _clean_image(value: str | None) -> str | None:
 
 class ArticleIn(BaseModel):
     title: str = Field(min_length=3, max_length=300)
-    # 40 is the frontend's floor for a displayable summary (hasValidAiSummary).
+    # 40 is the frontend's floor for a displayable summary (hasValidSummary).
     body: str = Field(min_length=40, max_length=20000)
     summary: str | None = Field(default=None, max_length=600)
     category: str

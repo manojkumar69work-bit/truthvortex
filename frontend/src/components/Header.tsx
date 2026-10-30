@@ -41,7 +41,7 @@ export const Header = memo(function Header({
         </div>
 
         <p className="font-news-headline truncate text-[19px] leading-tight text-[#071225]">
-          {tickerArticle?.title || "AI summarized headline will appear here after backend starts."}
+          {tickerArticle?.title || "Latest headline will appear here."}
         </p>
 
         <div className="ml-auto flex shrink-0 items-center gap-3">

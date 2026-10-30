@@ -2,7 +2,7 @@
 
 import { useEffect, memo, useCallback } from "react";
 import { SafeImage } from "./SafeImage";
-import { getImage, getDirectImage, hasValidAiSummary } from "./utils";
+import { getImage, getDirectImage, hasValidSummary } from "./utils";
 import { LABELS } from "./constants";
 import type { Article, Category } from "./types";
 
@@ -17,7 +17,7 @@ export const SectionModal = memo(function SectionModal({
   onClose: () => void;
   onOpenArticle: (article: Article) => void;
 }) {
-  const visibleArticles = articles.filter(hasValidAiSummary).slice(0, 9);
+  const visibleArticles = articles.filter(hasValidSummary).slice(0, 9);
 
   const handleKey = useCallback(
     (event: KeyboardEvent) => {
@@ -85,7 +85,7 @@ export const SectionModal = memo(function SectionModal({
           </div>
         ) : (
           <div className="flex h-[calc(100%-88px)] items-center justify-center rounded-md bg-slate-50 text-center text-lg font-black text-slate-400">
-            No AI summarized articles found in this section.
+            No articles found in this section.
           </div>
         )}
       </section>

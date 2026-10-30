@@ -11,7 +11,7 @@ import {
 } from "@/components/constants";
 import {
   normalizeCategory,
-  hasValidAiSummary,
+  hasValidSummary,
   getText,
   rotateSlice,
 } from "@/components/utils";
@@ -165,7 +165,7 @@ export default function Home() {
 
   const openArticle = useCallback(
     (article: (typeof articles)[number], section?: Category) => {
-      if (!hasValidAiSummary(article)) return;
+      if (!hasValidSummary(article)) return;
 
       const finalSection = section || normalizeCategory(article.category);
       const list = articlesForSection(finalSection);
@@ -330,7 +330,7 @@ export default function Home() {
       {selectedSection && (
         <SectionModal
           category={selectedSection}
-          articles={sectionArticles.filter(hasValidAiSummary)}
+          articles={sectionArticles.filter(hasValidSummary)}
           onClose={() => setSelectedSection(null)}
           onOpenArticle={(article) => openArticle(article, selectedSection)}
         />

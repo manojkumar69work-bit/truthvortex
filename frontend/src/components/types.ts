@@ -4,7 +4,7 @@ export type Article = {
   id: number;
   title: string;
   summary?: string | null;
-  ai_summary?: string | null;
+  body?: string | null;
   image?: string | null;
   category?: string | null;
   source?: string | null;

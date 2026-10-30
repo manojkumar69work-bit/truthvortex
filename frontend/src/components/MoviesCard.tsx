@@ -37,7 +37,7 @@ export const MoviesCard = memo(function MoviesCard({
           </div>
         </button>
       ) : (
-        <EmptyText text="AI summarized movie article will appear here." />
+        <EmptyText text="Movie news will appear here." />
       )}
     </CardShell>
   );

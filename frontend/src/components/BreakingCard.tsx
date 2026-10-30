@@ -74,7 +74,7 @@ export const BreakingCard = memo(function BreakingCard({
         </button>
       ) : (
         <div className="flex h-full items-center justify-center p-8 text-center">
-          <p className="text-lg font-black text-slate-400">AI summarized breaking news will appear here.</p>
+          <p className="text-lg font-black text-slate-400">Breaking news will appear here.</p>
         </div>
       )}
     </CardShell>
