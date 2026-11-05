@@ -195,7 +195,7 @@ AI_MODEL = _current_provider()["model"]
 
 ENABLE_TRANSLATION = os.getenv("ENABLE_TRANSLATION", "false").lower() == "true"
 ENABLE_AI_SUMMARY = os.getenv("ENABLE_AI_SUMMARY", "true").lower() == "true"
-# Requirement: every generated article must have an AI headline and 5-8 line
+# Requirement: every generated article must have an AI headline and 6-7 line
 # AI summary written directly in Telugu. This is intentionally not env-driven.
 SUMMARY_LANGUAGE = "Telugu"
 
@@ -215,9 +215,10 @@ ARTICLE_TEXT_TIMEOUT = int(os.getenv("ARTICLE_TEXT_TIMEOUT", "10"))
 MIN_FULL_ARTICLE_CHARS = int(os.getenv("MIN_FULL_ARTICLE_CHARS", "250"))
 MIN_AI_INPUT_CHARS = int(os.getenv("MIN_AI_INPUT_CHARS", "80"))
 MIN_AI_SUMMARY_CHARS = int(os.getenv("MIN_AI_SUMMARY_CHARS", "40"))
-# Spec: AI summaries must be 5-8 lines in Telugu as a flowing paragraph.
-MIN_AI_SUMMARY_LINES = int(os.getenv("MIN_AI_SUMMARY_LINES", "5"))
-MAX_AI_SUMMARY_LINES = int(os.getenv("MAX_AI_SUMMARY_LINES", "8"))
+# Spec: AI summaries must be 6-7 lines in Telugu as a flowing paragraph, in
+# the plain style of the Velugu daily.
+MIN_AI_SUMMARY_LINES = int(os.getenv("MIN_AI_SUMMARY_LINES", "6"))
+MAX_AI_SUMMARY_LINES = int(os.getenv("MAX_AI_SUMMARY_LINES", "7"))
 
 # Categories that the AI should be called for. Falls back to the
 # canonical set from categories.py so the two can't drift apart.
@@ -1330,7 +1331,7 @@ def normalize_ai_summary(text: str) -> str:
     if not lines:
         return ""
     # If the model returned one flowing paragraph instead of one sentence per
-    # line, split it on sentence boundaries so the 5-8 "line" check reflects the
+    # line, split it on sentence boundaries so the 6-7 "line" check reflects the
     # sentence count (otherwise a perfectly good paragraph is rejected as 1 line).
     if len(lines) == 1:
         parts = [p.strip() for p in re.split(r"(?<=[.?!।])\s+", lines[0]) if p.strip()]
@@ -1360,13 +1361,28 @@ def _summary_prompt_lang() -> str:
 
 def build_ai_prompt(title: str, article_text: str, category: str = "breaking") -> str:
     lang = SUMMARY_LANGUAGE
-    script_hint = "Telugu script only"
+    lines = f"{MIN_AI_SUMMARY_LINES} to {MAX_AI_SUMMARY_LINES}"
     return f"""
-You MUST rewrite the news headline and summary in Telugu only.
+You MUST rewrite the news headline and summary in Telugu only, in the style of
+the Velugu (V6 Velugu) daily newspaper.
 
 CRITICAL - STRICT LENGTH RULE - DO NOT VIOLATE:
-The summary MUST have EXACTLY 5 to 8 lines. NO MORE. NO LESS.
+The summary MUST have EXACTLY {lines} lines. NO MORE. NO LESS.
 Count your lines before outputting. Each line is ONE complete sentence.
+
+CONTENT - cover who, what, when, where and why (ఎవరు, ఏమిటి, ఎప్పుడు, ఎక్కడ, ఎందుకు):
+- Line 1: what happened, who it involves, and where.
+- Next lines: when it happened and why, then the key details, then what
+  happens next or who said what.
+- Answer a question ONLY with what the article itself says. If the article
+  does not say when or why, leave that out. NEVER make up a date, year, time,
+  number, name or reason. A missing fact is fine; an invented one is not.
+
+VELUGU STYLE:
+- Plain, everyday spoken Telugu that any reader understands at once.
+- Short, direct sentences. No heavy literary or Sanskrit-heavy words.
+- Write people, places, parties and acronyms in Telugu script
+  (for example బీజేపీ, ఐపీఎల్, హైదరాబాద్), never in English letters.
 
 FORMAT:
 HEADLINE: (one short {lang} line)
@@ -1374,20 +1390,20 @@ SUMMARY:
 line 1 of summary
 line 2 of summary
 ...
-(line 5 to line 8 max)
+(line {MIN_AI_SUMMARY_LINES} to line {MAX_AI_SUMMARY_LINES} max)
 
 RULES:
-- EVERY line must be in {script_hint}.
+- EVERY line must be in Telugu script only.
 - Do NOT use English words, Latin letters, Hinglish, Hindi, or transliteration.
 - The HEADLINE must also be rewritten/summarized in Telugu, not copied from the source.
 - One sentence per line. No empty lines.
 - Only facts from the article. No opinions.
-- No bullets, numbers, headings, or extra text.
+- No bullets, numbers, headings, labels like "ఎవరు:", or extra text.
 
 TITLE: {title}
 ARTICLE: {article_text}
 
-NOW OUTPUT. Remember: 5 to 8 lines EXACTLY.
+NOW OUTPUT. Remember: {lines} lines EXACTLY.
 """.strip()
 
 
@@ -1412,8 +1428,10 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
             # Use /no_think control token only for NVIDIA Nemotron
             system_content = (
                 ("/no_think\n" if AI_PROVIDER == "nvidia" else "")
-                + f"You are a {lang} news editor. STRICT: Always output exactly 5-8 lines {lang_label}. "
-                "Never fewer than 5. Never more than 8. Count your lines. One sentence per line."
+                + f"You are a {lang} news editor writing in the Velugu daily's plain style. "
+                f"STRICT: Always output exactly {MIN_AI_SUMMARY_LINES}-{MAX_AI_SUMMARY_LINES} lines {lang_label}. "
+                f"Never fewer than {MIN_AI_SUMMARY_LINES}. Never more than {MAX_AI_SUMMARY_LINES}. "
+                "Count your lines. One sentence per line."
             )
 
             response = ai_client.chat.completions.create(
@@ -1436,7 +1454,7 @@ def call_nvidia_summary(prompt: str, max_tokens: int = 2000, temperature: float 
             if choice.finish_reason == "length" and truncation_retries_remaining > 0:
                 truncation_retries_remaining -= 1
                 old_limit = max_tokens
-                # Cap the ceiling: a 5-8 line Telugu summary needs well under
+                # Cap the ceiling: a 6-7 line Telugu summary needs well under
                 # 2000 tokens, and some providers 400 on very large max_tokens.
                 max_tokens = min(max_tokens * 2, 8000)
                 log(f"    [Retry] Output truncated at {old_limit} tokens. Retrying with {max_tokens} tokens ({truncation_retries_remaining} retries left)...")
@@ -1973,7 +1991,7 @@ def _process_article(
         final_title = safe_translate(final_title)
 
     # Decide the summary now. Production requires every saved article to have
-    # an AI-generated Telugu headline and 5-8 line Telugu summary.
+    # an AI-generated Telugu headline and 6-7 line Telugu summary.
     ai_summary = ""
     ai_source_text = full_article_text or desc
     if full_article_text:
@@ -2028,7 +2046,7 @@ def _process_article(
 
     final_title = ai_headline.strip()
     # Store the summary as ONE flowing paragraph, not line-separated points.
-    # The model is prompted for one sentence per line only so the 5-8 length
+    # The model is prompted for one sentence per line only so the 6-7 length
     # check is reliable; here we join those sentences into a single paragraph
     # for storage and display.
     ai_summary = " ".join(

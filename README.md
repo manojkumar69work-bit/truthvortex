@@ -2,7 +2,7 @@
 
 **Telugu news, summarized by AI, refreshed every 30 minutes.**
 
-Most Telugu news sites are ad-heavy walls of text. Red4ce pulls 25 feeds (RSS plus Eenadu and Andhra Jyothy news sitemaps) across 6 categories, has an LLM write a 5–8 line Telugu summary of each article, and renders them as a TV-style dashboard you can read at a glance.
+Most Telugu news sites are ad-heavy walls of text. Red4ce pulls 25 feeds (RSS plus Eenadu and Andhra Jyothy news sitemaps) across 6 categories, has an LLM write a 6–7 line Telugu summary of each article in the plain Velugu-daily style, and renders them as a TV-style dashboard you can read at a glance.
 
 **🔗 [red4ce.com](https://red4ce.com)** · FastAPI + Postgres + Next.js 15 · live
 
@@ -95,7 +95,7 @@ Red4ce/
    (Andhra Pradesh, Movies, Education RSS), Eenadu and Andhra Jyothy (Crime and
    Latest, read from their Google News sitemaps since neither publishes RSS).
 2. **Summarize** — Each article's full text is sent through an AI pipeline that
-   generates a 5–8 line Telugu summary directly.
+   generates a 6–7 line Telugu summary directly.
 3. **Serve** — A FastAPI endpoint (`GET /news`) returns the articles sorted by
    publish date. The Next.js frontend polls every 60s and renders them in a
    TV-style dashboard with auto-rotating sections.
@@ -220,7 +220,7 @@ cd backend && python test_webutil.py     # no DB, no env, no keys needed
 - **Content policy at `/policy`** — editorial rules (original work only, no
   copied text or photos) enforced by the newsroom, plus ownership and terms
 
-- **Telugu AI summaries** (5–8 lines) direct from LLM
+- **Telugu AI summaries** (6–7 lines, who/what/when/where/why, Velugu style) direct from LLM
 - **Multi-provider fallback** (OpenRouter → OpenRouter2 → NVIDIA → Groq → Gemini) for reliability
 - **Scraper** runs every 30 minutes on GitHub Actions
 - **2-day retention** — each cycle deletes articles older than
