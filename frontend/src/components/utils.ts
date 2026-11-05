@@ -1,4 +1,4 @@
-import { API_BASE, CATEGORIES, FALLBACK_IMAGE } from "./constants";
+import { API_BASE, CATEGORIES, FALLBACK_IMAGE, REFERER_LOCKED_IMAGE_HOSTS } from "./constants";
 import type { Article, Category } from "./types";
 
 export function normalizeCategory(value?: string | null): Category {
@@ -86,6 +86,16 @@ function ownMediaUrl(image: string) {
   return image.startsWith("/media/") ? API_BASE + image : null;
 }
 
+function refererLockedUrl(image: string) {
+  try {
+    return new URL(image).hostname in REFERER_LOCKED_IMAGE_HOSTS
+      ? `/img?url=${encodeURIComponent(image)}`
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export function getImage(article?: Article | null) {
   const image = article?.image?.trim();
 
@@ -95,6 +105,9 @@ export function getImage(article?: Article | null) {
   // long cache; no need to route them through the resizing proxy.
   const own = ownMediaUrl(image);
   if (own) return own;
+
+  const locked = refererLockedUrl(image);
+  if (locked) return locked;
 
   // Try direct image first; if it fails (CORS/blocked), fallback to wsrv
   const wsrvUrl = `https://images.weserv.nl/?url=${encodeURIComponent(image)}&w=600&output=webp&q=80`;
@@ -107,7 +120,7 @@ export function getImage(article?: Article | null) {
 export function getDirectImage(article?: Article | null) {
   const image = article?.image?.trim();
   if (!image || image.startsWith("data:")) return FALLBACK_IMAGE;
-  return ownMediaUrl(image) ?? image;
+  return ownMediaUrl(image) ?? refererLockedUrl(image) ?? image;
 }
 
 export function todayLabel() {
